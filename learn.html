@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="学习板块：按知识点组织的算法讲解与教程，先学后刷；学习与刷题解耦，可一键跳到对应专题刷题。">
+<title>学习 · AI 算法岗面试题库</title>
+<style>
+  /* ===== 与 AI 知识区统一：深色渐变 + 玻璃卡片 + 青色点缀 =====
+     去品牌化：不含任何厂商品牌字样。离线自包含。讲解内容自编，来源已注明。 */
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+    background-attachment:fixed;min-height:100vh;color:#eaeaea;
+    display:flex;justify-content:center;padding:0 12px 56px;
+  }
+  .wrap{width:100%;max-width:480px}
+  header.site{
+    position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:11px 14px;margin:0 -12px;
+    background:rgba(15,52,96,.88);backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(79,195,247,.25);
+  }
+  header.site .brand{font-size:15px;font-weight:700;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+  header.site .brand span{color:#4fc3f7}
+  .home{font-size:13px;color:#b8c7d9;text-decoration:none;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);padding:8px 12px;border-radius:14px;white-space:nowrap}
+  .home:active{background:rgba(255,255,255,.16)}
+
+  .intro{text-align:center;padding:18px 6px 6px}
+  .intro h1{font-size:22px;font-weight:800;letter-spacing:.4px}
+  .intro h1 span{color:#4fc3f7}
+  .intro p{margin-top:10px;font-size:13px;line-height:1.7;color:#b8c7d9}
+  .intro .hint{display:inline-block;margin-top:10px;font-size:12px;color:#4fc3f7;background:rgba(79,195,247,.1);border:1px solid rgba(79,195,247,.25);padding:5px 12px;border-radius:16px}
+
+  .toc{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 4px}
+  .toc a{font-size:11.5px;color:#cfe3f5;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);padding:5px 10px;border-radius:14px;text-decoration:none;white-space:nowrap}
+  .toc a:active{background:rgba(79,195,247,.16)}
+
+  .lcard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;margin-top:12px;overflow:hidden}
+  .lhead{display:flex;align-items:center;gap:10px;padding:15px 16px;cursor:pointer}
+  .lhead .ico{font-size:20px;flex:0 0 auto}
+  .lhead .lt{flex:1;min-width:0}
+  .lhead .lt .lk{font-size:11.5px;color:#4fc3f7}
+  .lhead .lt .ln{font-size:15.5px;font-weight:700;margin-top:2px}
+  .lhead .chev{color:#4fc3f7;font-size:13px;transition:transform .2s;flex:0 0 auto}
+  .lcard.open .lhead .chev{transform:rotate(90deg)}
+  .lbody{display:none;padding:0 16px 16px;border-top:1px solid rgba(255,255,255,.1)}
+  .lcard.open .lbody{display:block}
+  .lbody .sec{margin-top:12px}
+  .lbody .sec h4{font-size:12px;color:#4fc3f7;margin-bottom:5px;letter-spacing:.3px}
+  .lbody .sec p,.lbody .sec li{font-size:13.5px;line-height:1.75;color:#d3dee9}
+  .lbody .sec ul{margin:0 0 0 18px;padding:0}
+  .lbody .sec li{margin-bottom:3px}
+  .lbody .sec b{color:#fff}
+  .lbody .src{margin-top:12px;font-size:11.5px;color:#8fa3bd;line-height:1.7}
+  .lbody .src a{color:#4fc3f7;text-decoration:none;word-break:break-all}
+  .lbody .src a:active{color:#81d4fa}
+  .lbody .goto{margin-top:14px;display:flex;gap:8px}
+  .lbody .goto a{
+    flex:1;text-align:center;text-decoration:none;font-size:14px;font-weight:700;
+    padding:12px 8px;border-radius:10px;
+    background:linear-gradient(90deg,#4fc3f7,#00bcd4);color:#0b1e33;
+  }
+  .lbody .goto a:active{filter:brightness(1.1)}
+  .lbody .goto a.ghost{flex:0 0 auto;background:rgba(255,255,255,.08);color:#c5d2e3;border:1px solid rgba(255,255,255,.14);padding:12px 14px}
+
+  footer{text-align:center;font-size:11px;color:#7c8aa0;margin-top:20px;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="site">
+    <div class="brand">📚 学习 <span>· 知识点讲解</span></div>
+    <a class="home" href="index.html">首页</a>
+  </header>
+
+  <div class="intro">
+    <h1>先学后刷 <span>· 11 个专题</span></h1>
+    <p>刷题前先看知识点讲解：概念、核心思想、常见套路与易错点。学习与刷题各自独立，学完一键跳到对应专题开刷。</p>
+    <span class="hint">💡 学习 ≠ 刷题，互不干扰；从讲解可直接进入对应专题</span>
+  </div>
+
+  <nav class="toc" id="toc"></nav>
+  <div id="list"></div>
+
+  <footer>讲解内容自编整理，来源已逐条注明（OI Wiki 等公开知识库）· 去品牌化，不含厂商字样 · 离线自包含</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // 知识点数据：与刷题区 11 个专题一一对应，topic 值必须与刷题区 category 完全一致
+  var KP = [
+    {
+      ico:"🔁", cat:"数组/双指针/二分", key:"双指针 · 二分查找",
+      gist:"有序或对撞场景下用两根指针减少嵌套循环；有序数组上用二分把线性查找压到对数级。",
+      points:[
+        "双指针：同向（快慢）处理原地去重/移除；对撞指针处理两数之和、回文判定。",
+        "二分：闭区间 [lo,hi]，mid=lo+(hi-lo)/2 防溢出；找第一个/最后一个满足条件的位置是高频套路。",
+        "二分答案：把「求最小值」转成「判定 mid 是否可行」再二分，常配合贪心 check。"
+      ],
+      pit:"二分边界与更新方向最易错：写清闭/开区间、lo=mid+1 还是 hi=mid-1；双指针注意指针移动条件与去重。",
+      src:[["OI Wiki · 双指针","https://oi-wiki.org/misc/two-pointer/"],["OI Wiki · 二分","https://oi-wiki.org/basic/binary/"]]
+    },
+    {
+      ico:"🥞", cat:"栈与队列/单调栈", key:"单调栈 · 单调队列",
+      gist:"维护单调性的栈/队列，用来求「下一个更大/更小元素」和「滑动窗口极值」。",
+      points:[
+        "单调栈：求每个元素左/右第一个更大/更小，O(n)；经典题「柱状图最大矩形」。",
+        "单调队列：滑动窗口最大/最小值，队首保极值、队尾维护单调。",
+        "栈还能做括号匹配、表达式求值、函数调用模拟。"
+      ],
+      pit:"入栈/出栈条件别写反；求「更大」用单调递减栈，求「更小」用单调递增栈；注意相等元素的处理。",
+      src:[["OI Wiki · 栈","https://oi-wiki.org/ds/stack/"],["OI Wiki · 单调栈","https://oi-wiki.org/ds/monotonic-stack/"],["OI Wiki · 单调队列","https://oi-wiki.org/ds/monotonic-queue/"]]
+    },
+    {
+      ico:"#️⃣", cat:"哈希/前缀和", key:"哈希表 · 前缀和",
+      gist:"哈希把「查找」降到 O(1)；前缀和把「区间和」降到 O(1) 查询。",
+      points:[
+        "前缀和：S[i]=S[i-1]+a[i]，区间和 sum(l,r)=S[r]-S[l-1]；差分用于区间加减。",
+        "哈希表：两数之和、计数、去重；遇「是否存在/计数」先想哈希。",
+        "前缀和 + 哈希：求和为定值/0 的子数组个数，把前缀和对目标取模/做差查哈希。"
+      ],
+      pit:"前缀和下标从 1 开始避免越界；哈希注意键设计与大数取模冲突；差分改完要前缀和还原。",
+      src:[["OI Wiki · 前缀和 & 差分","https://oi-wiki.org/basic/prefix-sum/"],["OI Wiki · 哈希表","https://oi-wiki.org/ds/hash/"]]
+    },
+    {
+      ico:"🔗", cat:"链表", key:"单链表 · 双指针",
+      gist:"链表题靠指针操作与快慢双指针；多画图、多处理边界。",
+      points:[
+        "快慢指针：找中点、判环、找环入口；倒数第 k 个让快指针先走 k 步。",
+        "反转链表：三指针迭代或递归；注意 prev/cur/next 顺序。",
+        "虚拟头节点 dummy 统一处理头插/删除，省掉大量边界判断。"
+      ],
+      pit:"改指针前先存 next；删除/插入别断链；判环时快慢指针相遇后还需一次找入口。",
+      src:[["OI Wiki · 链表","https://oi-wiki.org/ds/linked-list/"]]
+    },
+    {
+      ico:"🌳", cat:"二叉树/递归", key:"递归 · 分治 · 树",
+      gist:"树的问题大多是递归：把一棵树拆成「根 + 左右子树」分别处理再合并。",
+      points:[
+        "遍历：前序/中序/后序/层序；中序+BST 得有序序列。",
+        "递归框架：明确函数语义（返回什么），先写边界再写递推。",
+        "分治：分、治、合；求深度/平衡/路径/最近公共祖先都靠「左右子树结果合并」。"
+      ],
+      pit:"空节点边界要返回正确初值；区分「经过根的路径」与「子树内路径」；递归返回值与全局答案别混淆。",
+      src:[["OI Wiki · 树基础","https://oi-wiki.org/graph/tree-basic/"],["OI Wiki · 分治","https://oi-wiki.org/basic/divide-and-conquer/"]]
+    },
+    {
+      ico:"🧩", cat:"回溯", key:"回溯 · 搜索剪枝",
+      gist:"回溯=DFS 枚举所有方案，走不通就回头；用选择→递归→撤销三步。",
+      points:[
+        "模板：for 每个选择 { 做；递归；撤销 }；用 path 收集当前方案，用 used/visited 去重。",
+        "排列/组合/子集：排列要 used 标记，组合按起点递归避免重复。",
+        "剪枝：排序后遇到不可能分支提前 return，能极大提速。"
+      ],
+      pit:"撤销要彻底（path.pop 与状态还原）；组合去重要排序并跳过相邻重复；剪枝条件想清楚边界。",
+      src:[["OI Wiki · 回溯法","https://oi-wiki.org/search/backtracking/"]]
+    },
+    {
+      ico:"💰", cat:"贪心", key:"贪心选择 · 局部最优",
+      gist:"每步选当前最优，期望得到全局最优；关键是排序后按某策略选，并用反例验证正确性。",
+      points:[
+        "区间问题：按右端点排序，每次选能放的最靠左区间（最多不相交区间）。",
+        "分配/调度：按代价或截止时间排序后贪心选择。",
+        "证明：用交换法或反证，证明贪心解不劣于最优解。"
+      ],
+      pit:"贪心不是总能用——务必验证；排序键选错就全盘错；遇到「最值」先想能不能贪心，不行再 DP。",
+      src:[["OI Wiki · 贪心","https://oi-wiki.org/basic/greedy/"]]
+    },
+    {
+      ico:"📊", cat:"动态规划", key:"状态 · 转移 · 边界",
+      gist:"把原问题拆成子问题，用状态表示子问题答案，按转移方程递推。",
+      points:[
+        "三要素：状态定义、转移方程、边界；先想「dp[i] 表示什么」。",
+        "常见类型：线性 DP、背包、区间 DP、树形 DP、状压 DP、数位 DP。",
+        "优化：滚动数组压空间，单调队列/斜率优化压时间；记搜是递归版 DP。"
+      ],
+      pit:"状态定义要能唯一定位子问题；转移别漏情况；初始化与答案位置（dp[n] 还是 max dp[i]）易错。",
+      src:[["OI Wiki · 动态规划","https://oi-wiki.org/dp/"]]
+    },
+    {
+      ico:"🕸️", cat:"图论/并查集", key:"图遍历 · 并查集 · 最短路",
+      gist:"图用邻接表存；遍历用 BFS/DFS；连通性问题用并查集；带权最短路用 Dijkstra。",
+      points:[
+        "BFS 求无权最短路、分层；DFS 求连通块/拓扑/环。",
+        "并查集：路径压缩+按秩合并近 O(1)；判连通、Kruskal 最小生成树。",
+        "最短路：Dijkstra（非负权）、Bellman-Ford/SPFA（可负权）、Floyd（多源）。"
+      ],
+      pit:"无向图加两条边；并查集 find 要路径压缩；Dijkstra 不能处理负权；拓扑排序前先判环。",
+      src:[["OI Wiki · 图论简介","https://oi-wiki.org/graph/"],["OI Wiki · 并查集","https://oi-wiki.org/ds/dsu/"]]
+    },
+    {
+      ico:"🔤", cat:"字符串/KMP", key:"KMP · 字符串匹配",
+      gist:"KMP 用前缀函数在 O(n+m) 内完成模式串匹配；核心是利用已匹配信息跳过重复比较。",
+      points:[
+        "前缀函数 π[i]：模式串 s[0..i] 的最长相等前后缀长度。",
+        "匹配：失配时 j=π[j-1] 跳转，而不是回退主串指针。",
+        "扩展：字符串哈希 O(1) 比较子串相等；Trie 字典树做前缀检索。"
+      ],
+      pit:"π 数组下标从 0 算起；失配跳转用 π[j-1] 而非 π[j]；哈希注意双哈希防冲突。",
+      src:[["OI Wiki · 前缀函数与 KMP","https://oi-wiki.org/string/kmp/"],["OI Wiki · 字符串哈希","https://oi-wiki.org/string/hash/"]]
+    },
+    {
+      ico:"🌲", cat:"树状数组与线段树", key:"BIT · 线段树 · 区间修改",
+      gist:"维护区间信息支持单点/区间修改与区间查询；BIT 代码短，线段树功能全。",
+      points:[
+        "树状数组：lowbit 维护前缀，单点修改+前缀查询 O(log n)；区间和靠两次前缀相减。",
+        "线段树：lazy 标记支持区间修改+区间查询；pushdown/pushup 是核心。",
+        "选型：只做单点修改+前缀查询用 BIT；区间修改/复杂合并用线段树。"
+      ],
+      pit:"BIT 下标从 1 开始；线段树 lazy 一定要 pushdown 否则结果错；合并函数要满足结合律。",
+      src:[["OI Wiki · 树状数组","https://oi-wiki.org/ds/fenwick/"],["OI Wiki · 线段树基础","https://oi-wiki.org/ds/seg/"]]
+    }
+  ];
+
+  function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  function encTopic(c){return encodeURIComponent(c);}
+
+  // TOC
+  var toc=document.getElementById("toc");
+  KP.forEach(function(k,i){
+    var a=document.createElement("a"); a.href="#kp-"+i; a.textContent=k.cat;
+    toc.appendChild(a);
+  });
+
+  // list
+  var list=document.getElementById("list");
+  KP.forEach(function(k,i){
+    var card=document.createElement("div"); card.className="lcard"; card.id="kp-"+i;
+    var srcHtml=k.src.map(function(s){return '<a href="'+esc(s[1])+'" target="_blank" rel="noopener noreferrer">'+esc(s[0])+'</a>';}).join(" · ");
+    var pts=k.points.map(function(p){return "<li>"+esc(p)+"</li>";}).join("");
+    card.innerHTML =
+      '<div class="lhead">'+
+        '<div class="ico">'+k.ico+'</div>'+
+        '<div class="lt"><div class="lk">'+esc(k.key)+'</div><div class="ln">'+esc(k.cat)+'</div></div>'+
+        '<div class="chev">▶</div>'+
+      '</div>'+
+      '<div class="lbody">'+
+        '<div class="sec"><h4>一句话</h4><p>'+esc(k.gist)+'</p></div>'+
+        '<div class="sec"><h4>核心要点</h4><ul>'+pts+'</ul></div>'+
+        '<div class="sec"><h4>易错点</h4><p>'+esc(k.pit)+'</p></div>'+
+        '<div class="sec src"><b>来源参考：</b> '+srcHtml+'</div>'+
+        '<div class="goto">'+
+          '<a href="algorithm.html?topic='+encTopic(k.cat)+'">去刷本题专题 →</a>'+
+          '<a class="ghost" href="algorithm.html">全部刷题 →</a>'+
+        '</div>'+
+      '</div>';
+    card.querySelector(".lhead").addEventListener("click",function(){ card.classList.toggle("open"); });
+    list.appendChild(card);
+  });
+
+  // open the first card by default
+  list.querySelector(".lcard").classList.add("open");
+})();
+</script>
+</body>
+</html>
