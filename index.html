@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="AI 算法岗面试题库：算法刷题 + AI 选择题闯关 + AI 问答浏览，手机端刷题/做题/记忆，纯静态离线可用。">
+<meta name="description" content="AI 算法岗面试题库：算法刷题（单题模式/三级提示/侧边栏）+ 学习板块 + AI 选择题闯关 + AI 问答浏览，手机端刷题/做题/记忆，纯静态离线可用。">
 <title>AI 算法岗面试题库</title>
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
 <div class="wrap">
-  <!-- 顶部 sticky 导航：三档切换 -->
+  <!-- 顶部 sticky 导航：四档切换 -->
   <header class="site">
     <div class="brand">🎯 AI 算法岗 <span>面试题库</span></div>
     <nav class="navtabs">
+      <a href="learn.html" data-nav="learn.html">📚 学习</a>
       <a href="algorithm.html" data-nav="algorithm.html">🧮 刷题</a>
       <a href="ai-section.html#quiz" data-nav="ai-section.html#quiz">📝 选择题</a>
       <a href="ai-section.html#qa" data-nav="ai-section.html#qa">💬 问答</a>
@@ -22,20 +23,27 @@
   <!-- 首屏 -->
   <section class="hero">
     <h1>AI 算法岗 <span>面试题库</span></h1>
-    <p>真题优先（为主，覆盖////等 AI 岗），缺失考点按常见考点自出并标注。<br>手机端快速刷题、做题、记忆，纯静态、离线可用、无后端。</p>
+    <p>真题优先（为主，覆盖 AI 岗），缺失考点按常见考点自出并标注。<br>手机端快速刷题、做题、记忆，纯静态、离线可用、无后端。</p>
     <div class="stats">
+      <b>📚 学习 11 专题</b>
       <b>🧮 算法 102</b>
       <b>📝 选择题 70</b>
       <b>💬 问答 73</b>
     </div>
   </section>
 
-  <!-- 三大入口 -->
+  <!-- 四大入口 -->
   <section class="cards">
+    <a class="card" href="learn.html">
+      <div class="ico">📚</div>
+      <h2>学习板块</h2>
+      <p>刷题前先看知识点讲解：11 个专题的概念、核心思想、常见套路与易错点，来源已注明。学完一键跳到对应专题开刷。</p>
+      <span class="go">先学后刷 →</span>
+    </a>
     <a class="card" href="algorithm.html">
       <div class="ico">🧮</div>
-      <h2>算法竞赛刷题区</h2>
-      <p>精选约 100 道高频算法题，读题 → 思考 → 展开题解，两档记忆标记（会 / 模糊）。支持分类筛选、关键词搜索、进度统计，状态自动保存在本地。</p>
+      <h2>算法刷题区（单题模式）</h2>
+      <p>102 道高频算法题，单题视图：默认只看题面，点击展开题解与高亮代码；3 级递进提示逐级展开；可伸缩侧边栏与编号跳转；看过/完成/收藏状态本地保存，可按是否答过筛选。</p>
       <span class="go">进入刷题 →</span>
     </a>
     <a class="card" href="ai-section.html#quiz">
