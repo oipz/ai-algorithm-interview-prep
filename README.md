@@ -1,45 +1,53 @@
-# AI Algorithm Interview Prep
+# AI 算法岗面试题库
 
-A structured preparation repository for **AI / algorithm engineer** interview roles — covering the core knowledge areas, coding practice, and review notes typically expected in algorithm-position interviews.
+手机端可快速刷题、做题、记忆的 **纯静态** 面试题库站点。无后端、无外部依赖、离线可用，所有进度与记忆标记保存在浏览器 `localStorage`。
 
-## Scope
+> 真题优先（某头部厂商真题为主，覆盖字节 / 腾讯 / 阿里 / 百度 / 美团等大厂 AI 岗），缺失考点按常见考点自出并标注。站点已**去品牌化**，不含任何厂商品牌字样，专有名词已替换为通用表述。
 
-This project organizes preparation material for AI algorithm roles into a clear, reusable structure:
+## 在线访问
 
-- **Fundamentals** — math (linear algebra, probability, statistics, optimization), data structures & algorithms
-- **Machine Learning** — classical ML (regression, SVM, trees, ensemble methods, clustering, dimensionality reduction)
-- **Deep Learning** — MLP, CNN, RNN/LSTM, attention & Transformers, optimization, regularization, training tricks
-- **NLP** — tokenization, embeddings, language models, text classification, seq2seq
-- **CV** — image classification, detection, segmentation, generative models
-- **Engineering & ML Systems** — feature pipelines, serving, distributed training, evaluation metrics
-- **Coding Practice** — LeetCode-style algorithm problems with solutions and complexity analysis
-- **Mock Q&A** — high-frequency interview questions with concise, self-contained answers
+GitHub Pages：https://oipz.github.io/ai-algorithm-interview-prep/
 
-## Structure
+## 站点结构
 
 ```
-docs/        # Notes organized by topic
-  fundamentals/
-  machine-learning/
-  deep-learning/
-  nlp/
-  cv/
-  systems/
-coding/      # Algorithm problem solutions with explanations
-qa/          # Q&A bank
-resources/   # Curated references
+├── index.html              # 落地页 + 顶部 sticky 三档导航（刷题 / 选择题 / 问答）
+├── algorithm.html          # 算法竞赛刷题区（自包含，离线可用）
+├── ai-section.html         # AI 知识区（闯关选择题 + 问答浏览，自包含）
+├── algorithm-problems.json # 算法题结构化数据（便于复用）
+└── assets/
+    ├── site.css            # 共享站点样式（落地页 + 顶部导航 + 卡片）
+    └── site.js             # 共享脚本（导航高亮 + 统一 localStorage 命名空间）
 ```
 
-## How to use
+顶部 sticky 导航在「🧮 刷题 / 📝 选择题 / 💬 问答」三档间切换；各区子页面顶部「返回首页」回到 `index.html`。
 
-1. Pick a topic from `docs/` and review the notes.
-2. Cross-check the corresponding Q&A in `qa/`.
-3. Reinforce with related coding problems in `coding/`.
+## 内容概览
 
-## Contributing
+| 区 | 内容 | 题数 |
+|---|---|---|
+| 算法竞赛刷题区 | 高频算法题，读题→思考→展开题解，两档记忆标记 | 102 |
+| AI 选择题闯关 | MCQ 即时判分 + 解析 | 70 |
+| AI 问答浏览 | 问答真题，分类 / 记忆状态筛选 | 73 |
 
-This is a personal preparation repository. Material is collected and written during study sessions. Add notes under the matching topic directory and keep each answer self-contained.
+## 特性
 
-## License
+- 📱 手机优先：内容列宽 ≤480px，竖向单列浏览。
+- 💾 本地存储：进度与记忆标记存于浏览器 `localStorage`，清除浏览器数据会丢失。
+- 🔌 离线可用：纯静态，无构建步骤，浏览器直接打开即用。
+- 🎨 闯关即时反馈：选择题作答后即时判分（对✅绿 / 错❌红）并展示解析。
 
-For personal study use.
+## 本地预览
+
+直接用浏览器打开 `index.html` 即可；或任起一静态服务器：
+
+```bash
+python3 -m http.server 8000
+# 访问 http://localhost:8000/
+```
+
+## 分支说明
+
+- `feat/algorithm-section` — 算法刷题区（仅本区文件，分支独立）。
+- `feat/ai-section` — AI 知识区（仅本区文件，分支独立）。
+- `main` — 整合后的最终站点（共享骨架 `index.html` + `assets/` + 两区合并）。
