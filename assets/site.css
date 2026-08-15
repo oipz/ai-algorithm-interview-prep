@@ -1,0 +1,67 @@
+/* ===== AI 算法岗面试题库 · 共享站点样式 =====
+   ：站点统一名「AI 算法岗面试题库」。
+   该文件为 index.html 落地页与共享顶部导航提供统一样式，
+   各区子页面（algorithm.html / ai-section.html）保留各自内联样式以保证离线自包含。 */
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);
+  background-attachment:fixed;
+  min-height:100vh;color:#eaeaea;
+  display:flex;justify-content:center;
+  padding:0 12px 48px;
+}
+.wrap{width:100%;max-width:480px}
+
+/* 顶部 sticky 导航（三档切换） */
+header.site{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 14px;margin:0 -12px;
+  background:rgba(15,52,96,.88);backdrop-filter:blur(8px);
+  border-bottom:1px solid rgba(79,195,247,.25);
+}
+header.site .brand{font-size:15px;font-weight:700;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header.site .brand span{color:#4fc3f7}
+.navtabs{display:flex;gap:6px}
+.navtabs a{
+  font-size:13px;font-weight:600;color:#c5d2e3;text-decoration:none;
+  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.14);
+  border-radius:10px;padding:7px 11px;white-space:nowrap;transition:all .15s;
+}
+.navtabs a.active{background:rgba(79,195,247,.16);border-color:#4fc3f7;color:#fff}
+.navtabs a:active{background:rgba(255,255,255,.16)}
+
+/* hero */
+.hero{text-align:center;padding:30px 6px 18px}
+.hero h1{font-size:24px;font-weight:800;letter-spacing:.5px}
+.hero h1 span{color:#4fc3f7}
+.hero p{margin-top:10px;font-size:13.5px;line-height:1.7;color:#b8c7d9}
+.hero .stats{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+.hero .stats b{
+  font-size:12px;color:#4fc3f7;background:rgba(79,195,247,.10);
+  border:1px solid rgba(79,195,247,.25);padding:5px 11px;border-radius:16px;
+}
+
+/* 入口卡片 */
+.cards{display:flex;flex-direction:column;gap:14px;margin-top:6px}
+.card{
+  display:block;text-decoration:none;color:inherit;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;padding:20px 18px;transition:transform .12s,border-color .15s;
+}
+.card:active{transform:scale(.985)}
+.card .ico{font-size:26px}
+.card h2{font-size:17px;font-weight:700;margin-top:8px}
+.card p{font-size:13px;line-height:1.6;color:#b8c7d9;margin-top:7px}
+.card .go{display:inline-block;margin-top:12px;font-size:13px;color:#4fc3f7;font-weight:600}
+
+/* 页脚提示 */
+.foot{
+  margin-top:26px;padding:16px;border-radius:12px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+  font-size:12px;line-height:1.7;color:#9aa7b8;
+}
+.foot b{color:#c5d2e3}
