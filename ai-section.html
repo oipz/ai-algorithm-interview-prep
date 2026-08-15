@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 算法岗面试题库 · 知识区（闯关选择题 + 问答浏览）</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh; color: #eaeaea;
+    display: flex; justify-content: center;
+    padding: 0 12px 40px;
+  }
+  .wrap { width: 100%; max-width: 480px; }
+  /* sticky header */
+  header.site {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; margin: 0 -12px;
+    background: rgba(15,52,96,.88); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(79,195,247,.25);
+  }
+  header.site .brand { font-size: 16px; font-weight: 700; letter-spacing: .3px; }
+  header.site .brand span { color: #4fc3f7; }
+  header.site .home { font-size: 13px; color: #b8c7d9; text-decoration: none; background: rgba(255,255,255,.08); padding: 6px 12px; border-radius: 16px; }
+  header.site .home:active { background: rgba(255,255,255,.16); }
+
+  /* mode switch */
+  .tabs { display: flex; gap: 8px; margin: 16px 0 14px; }
+  .tab {
+    flex: 1; text-align: center; padding: 10px 6px;
+    background: rgba(255,255,255,.06); border: 1.5px solid rgba(255,255,255,.14);
+    border-radius: 10px; font-size: 14px; font-weight: 600; color: #c5d2e3;
+    cursor: pointer; transition: all .15s;
+  }
+  .tab.active { background: rgba(79,195,247,.16); border-color: #4fc3f7; color: #fff; }
+
+  /* ===== shared card ===== */
+  .card {
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12);
+    border-radius: 14px; padding: 18px 16px;
+  }
+
+  /* ===== MCQ ===== */
+  #quiz .score { font-size: 14px; background: rgba(255,255,255,.08); padding: 6px 12px; border-radius: 20px; }
+  .bar { height: 6px; background: rgba(255,255,255,.12); border-radius: 3px; overflow: hidden; margin-bottom: 16px; }
+  #progress { height: 100%; width: 0; background: linear-gradient(90deg, #4fc3f7, #00e5ff); transition: width .3s; }
+  .meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 6px; }
+  #cat { font-size: 12px; color: #4fc3f7; background: rgba(79,195,247,.12); padding: 3px 10px; border-radius: 12px; }
+  #counter { font-size: 12px; color: #9aa7b8; }
+  #qtext { font-size: 16px; line-height: 1.6; margin-bottom: 16px; font-weight: 500; }
+  .opts { display: flex; flex-direction: column; gap: 9px; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 10px; width: 100%; text-align: left;
+    background: rgba(255,255,255,.07); border: 1.5px solid rgba(255,255,255,.15);
+    border-radius: 10px; padding: 11px 13px; font-size: 14.5px; color: #eaeaea;
+    cursor: pointer; transition: all .15s; line-height: 1.5;
+  }
+  .opt:hover { background: rgba(255,255,255,.13); border-color: #4fc3f7; }
+  .opt .letter { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+  .opt .txt { flex: 1; }
+  .opt input[type=checkbox] { margin-top: 4px; accent-color: #4fc3f7; }
+  .opt.right { background: rgba(76,175,80,.18); border-color: #66bb6a; }
+  .opt.right .letter { background: #66bb6a; color: #fff; }
+  .opt.wrong { background: rgba(244,67,54,.16); border-color: #ef5350; }
+  .opt.wrong .letter { background: #ef5350; color: #fff; }
+  .opt:disabled, .opt.locked { cursor: default; }
+  #submitMulti { margin-top: 14px; width: 100%; padding: 12px; background: #4fc3f7; color: #10233a; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  #submitMulti:hover { background: #81d4fa; }
+  #feedback { margin-top: 16px; padding: 14px 16px; border-radius: 10px; font-size: 14.5px; line-height: 1.7; display: none; }
+  #feedback.show { display: block; }
+  #feedback.ok { background: rgba(76,175,80,.14); border: 1px solid rgba(102,187,106,.5); }
+  #feedback.no { background: rgba(244,67,54,.12); border: 1px solid rgba(239,83,80,.5); }
+  #feedback .fb-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  #feedback .exp { color: #cfe3f5; }
+  #feedback .exp b { color: #fff; }
+  #feedback .src { display: block; margin-top: 8px; font-size: 12px; color: #8fa3bd; }
+  .btn-next { margin-top: 16px; width: 100%; padding: 13px; background: linear-gradient(90deg, #4fc3f7, #00bcd4); color: #0b1e33; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; display: none; }
+  .btn-next:hover { filter: brightness(1.08); }
+  .final { text-align: center; padding: 20px 6px; }
+  .final .big { font-size: 48px; margin-bottom: 8px; }
+  .final h2 { font-size: 21px; margin-bottom: 10px; }
+  .final .stat { font-size: 15px; color: #b8c7d9; margin-bottom: 6px; }
+  .final .again { margin-top: 16px; display: inline-block; padding: 11px 22px; background: #4fc3f7; color: #0b1e33; border: none; border-radius: 10px; font-size: 14.5px; font-weight: 700; cursor: pointer; }
+  .final .again.ghost { background: rgba(255,255,255,.1); color: #eaeaea; margin-left: 8px; }
+  .final .again:hover { filter: brightness(1.1); }
+
+  /* ===== Q&A ===== */
+  .qbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .chip { font-size: 12.5px; padding: 6px 12px; border-radius: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); color: #c5d2e3; cursor: pointer; white-space: nowrap; }
+  .chip.active { background: rgba(79,195,247,.16); border-color: #4fc3f7; color: #fff; }
+  .stats { font-size: 12px; color: #9aa7b8; margin-bottom: 12px; padding: 0 2px; }
+  .qcard { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); border-radius: 12px; padding: 14px 14px; margin-bottom: 10px; }
+  .qcard .qhead { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+  .qcard .qhead .chev { flex-shrink: 0; color: #4fc3f7; font-size: 13px; margin-top: 2px; transition: transform .2s; }
+  .qcard.open .qhead .chev { transform: rotate(90deg); }
+  .qcard .qtitle { flex: 1; font-size: 15px; line-height: 1.55; font-weight: 600; }
+  .qcard .qcat { font-size: 11px; color: #4fc3f7; display: block; margin-bottom: 4px; }
+  .qcard .qbody { display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.1); font-size: 14px; line-height: 1.7; color: #d3dee9; }
+  .qcard.open .qbody { display: block; }
+  .qcard .qbody .row { margin-bottom: 9px; }
+  .qcard .qbody .row .lbl { color: #4fc3f7; font-weight: 700; margin-right: 4px; }
+  .qcard .qbody .src { font-size: 12px; color: #8fa3bd; margin-top: 2px; }
+  .qcard .marks { display: flex; gap: 8px; margin-top: 12px; }
+  .qcard .mk { flex: 1; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); color: #c5d2e3; text-align: center; }
+  .qcard .mk.on.yes { background: rgba(76,175,80,.2); border-color: #66bb6a; color: #c8f7d0; }
+  .qcard .mk.on.no { background: rgba(255,152,0,.18); border-color: #ffb74d; color: #ffe0b2; }
+  .empty { text-align: center; color: #8fa3bd; font-size: 14px; padding: 30px 0; }
+  footer { text-align: center; font-size: 12px; color: #7c8aa0; margin-top: 18px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="wrap" id="top">
+  <header class="site">
+    <div class="brand">🎯 AI 算法岗面试题库 <span>· 知识区</span></div>
+    <a class="home" href="#top" id="homeBtn">↑ 返回首页</a>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" id="tabQuiz">📝 闯关选择题</div>
+    <div class="tab" id="tabQA">📚 问答浏览</div>
+  </div>
+
+  <!-- ============ MCQ ============ -->
+  <section id="quiz">
+    <div class="meta" style="margin-bottom:10px">
+      <span class="score" id="score">答对 0 / 0</span>
+      <span id="counter"></span>
+    </div>
+    <div class="bar"><div id="progress"></div></div>
+    <div class="card">
+      <div class="meta">
+        <span id="cat"></span>
+        <span id="qcount"></span>
+      </div>
+      <div id="qtext"></div>
+      <div class="opts" id="opts"></div>
+      <button id="submitMulti" style="display:none">提交答案</button>
+      <div id="feedback"></div>
+      <button class="btn-next" id="next">下一题 ➜</button>
+    </div>
+    <footer>共 <b id="totalN">0</b> 题 · 选完即判 · 附解析与来源 · 支持随机重练</footer>
+  </section>
+
+  <!-- ============ Q&A ============ -->
+  <section id="qa" style="display:none">
+    <div class="qbar" id="catBar"></div>
+    <div class="qbar" id="memBar">
+      <div class="chip active" data-mem="all">全部</div>
+      <div class="chip" data-mem="yes">✅ 已记住</div>
+      <div class="chip" data-mem="no">🧡 未记住</div>
+      <div class="chip" data-mem="none">⚪ 未标记</div>
+    </div>
+    <div class="stats" id="qaStats"></div>
+    <div id="qaList"></div>
+    <footer>点击题目展开考察点与参考思路 · 两档记忆标记本地保存 · 可按状态筛选复习</footer>
+  </section>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   MCQ 数据：移植 THIN-1 35 题并扩充至约 60 题。
+   字段：cat 分类 / multi 是否多选 / q 题干 / opts 选项 / ans 正确下标 / exp 解析 / src 来源标注
+   ===================================================================== */
+const QUESTIONS = [
+  // ===== 机器学习 =====
+  { cat:"机器学习", multi:false, q:"以下哪个算法属于无监督学习？",
+    opts:["逻辑回归","XGBoost","KMeans 聚类","支持向量机"], ans:[2],
+    exp:"KMeans 在无标签数据上做聚类，属于无监督学习；逻辑回归、XGBoost、SVM 都需要标签，是有监督学习。",
+    src:" ·   AI 题库原题变体" },
+  { cat:"机器学习", multi:false, q:"以下哪种激活函数可能导致“神经元死亡”（dying ReLU）？",
+    opts:["Sigmoid","Tanh","ReLU","Softmax"], ans:[2],
+    exp:"ReLU 在负区间梯度恒为 0，若神经元长期输入为负，更新后无法恢复激活；LeakyReLU / PReLU 可缓解。",
+    src:" · 算法面经" },
+  { cat:"机器学习", multi:false, q:"以下哪种做法不能缓解模型过拟合？",
+    opts:["增加训练数据","L2 正则化","增加网络层数与参数","Dropout"], ans:[2],
+    exp:"增加模型复杂度会加剧过拟合；增加数据、正则化、Dropout 均为常见防过拟合手段。",
+    src:"【自出】· 常见考点" },
+  { cat:"机器学习", multi:false, q:"Transformer 的 Self-Attention 中，QKᵀ 除以 √d_k 的主要目的是？",
+    opts:["加快矩阵乘法","防止点积方差随维度增大导致 softmax 梯度饱和","减少参数量","引入位置信息"], ans:[1],
+    exp:"维度 d_k 越大，点积方差越大，softmax 越容易进入饱和区、梯度趋近 0；除以 √d_k 使方差稳定在 1 附近。",
+    src:" · / LLM 岗高频" },
+  { cat:"机器学习", multi:false, q:"同时兼顾查准率（Precision）与查全率（Recall）的指标是？",
+    opts:["Accuracy","F1 Score","均方误差","交叉熵"], ans:[1],
+    exp:"F1 是 Precision 与 Recall 的调和平均；Accuracy 在类别不平衡时失真，MSE / 交叉熵是损失函数。",
+    src:" · 算法面经（原题提及 F1）" },
+  { cat:"机器学习", multi:false, q:"L2 正则化等价于哪种先验分布下的 MAP 估计？",
+    opts:["均匀分布","高斯分布","拉普拉斯分布","伯努利分布"], ans:[1],
+    exp:"对高斯先验取负对数得到 L2 惩罚项；拉普拉斯先验对应 L1（产生稀疏解）。",
+    src:" · 高频（  宝典）" },
+  { cat:"机器学习", multi:false, q:"逻辑回归（LR）输出值的含义是？",
+    opts:["类别的硬预测","样本属于正类的概率（经 sigmoid 映射）","支持向量的个数","特征重要性"], ans:[1],
+    exp:"LR 将特征的线性组合经 sigmoid 映射到 (0,1)，可解释为属于正类的概率，再按阈值得到类别。",
+    src:" · 算法面经" },
+  { cat:"机器学习", multi:false, q:"以下哪个是判别式模型（Discriminative Model）？",
+    opts:["朴素贝叶斯","隐马尔可夫模型（HMM）","条件随机场（CRF）","高斯混合模型（GMM）"], ans:[2],
+    exp:"CRF 直接建模条件概率 P(Y|X)，是判别式模型；朴素贝叶斯、HMM、GMM 建模联合分布 P(X,Y)，为生成式模型。",
+    src:" · /高频" },
+  { cat:"机器学习", multi:true, q:"【多选】缓解深度网络梯度消失的方法包括？",
+    opts:["ReLU 系激活函数","残差连接（ResNet）","BatchNorm","增大学习率"], ans:[0,1,2],
+    exp:"ReLU 正区间导数恒 1；残差连接让梯度经恒等捷径直传；BatchNorm 稳定激活分布。增大学习率反而可能不收敛。",
+    src:" · 高频" },
+  { cat:"机器学习", multi:true, q:"【多选】以下属于正则化 / 防过拟合手段的有？",
+    opts:["L1/L2 正则","Dropout","早停（Early Stopping）","数据增强"], ans:[0,1,2,3],
+    exp:"四项都能抑制过拟合：L1/L2 限制参数范数，Dropout 随机丢弃神经元，早停据验证集提前停止，数据增强扩充分布。",
+    src:" · 高频" },
+  { cat:"机器学习", multi:true, q:"【多选】XGBoost 相比传统 GBDT 的改进包括？",
+    opts:["对损失做二阶泰勒展开","目标函数显式加正则项","支持行 / 列采样","自动学习缺失值处理方向"], ans:[0,1,2,3],
+    exp:"四项均为 XGBoost 相对 GBDT 的典型改进，带来更高精度、更强防过拟合与训练效率。",
+    src:" · //高频" },
+  { cat:"机器学习", multi:true, q:"【多选】以下属于生成式模型的有？",
+    opts:["朴素贝叶斯","GAN","HMM","逻辑回归"], ans:[0,1,2],
+    exp:"生成式模型建模联合分布 / 数据生成过程；逻辑回归建模条件概率，是判别式模型。",
+    src:"【自出】· 常见考点" },
+  { cat:"机器学习", multi:false, q:"以下哪些算法通常不需要对特征做归一化？",
+    opts:["SVM","KNN","决策树 / GBDT","逻辑回归"], ans:[2],
+    exp:"树模型按特征值分裂，对单调变换与量纲不敏感，无需归一化；基于距离/梯度的模型（SVM、KNN、LR、神经网络）需要。",
+    src:" · 机器学习岗" },
+  { cat:"机器学习", multi:false, q:"偏差（Bias）与方差（Variance）的关系，正确的是？",
+    opts:["偏差大表示模型过拟合","方差大表示模型太简单欠拟合","bagging 主要降偏差、boosting 主要降方差","bagging 主要降方差、boosting 主要降偏差"], ans:[3],
+    exp:"偏差大＝欠拟合（模型太简单）；方差大＝过拟合（模型太复杂）。bagging 多模型平均降方差，boosting 逐步纠正降偏差。",
+    src:" · //高频" },
+  { cat:"机器学习", multi:false, q:"AUC 衡量的是模型的什么能力？",
+    opts:["预测概率的绝对准确性","正负样本的排序能力，对阈值不敏感","训练集上的准确率","模型参数量"], ans:[1],
+    exp:"AUC 是 ROC 曲线下面积，衡量正样本排在负样本前面的概率，只看排序、对决策阈值不敏感，适合不平衡场景。",
+    src:" · 算法面经（查准率/查全率/AUC 同题）" },
+  { cat:"机器学习", multi:false, q:"朴素贝叶斯之所以“朴素”，是因为？",
+    opts:["模型过于简单所以效果差","假设特征在给定类别下条件独立","只用一阶特征","不需要训练数据"], ans:[1],
+    exp:"朴素贝叶斯假设特征在给定标签下条件独立，现实常不成立但效果尚可；适合高维稀疏文本分类，需拉普拉斯平滑防零概率。",
+    src:"【自出】· 常见考点" },
+  { cat:"机器学习", multi:false, q:"为什么分类任务常用交叉熵损失而不是 MSE？",
+    opts:["MSE 计算量太大","交叉熵配 softmax 梯度简洁（ŷ−y）、收敛快，MSE 配 sigmoid 两端梯度饱和","交叉熵不需要标签","MSE 只能用于回归"], ans:[1],
+    exp:"softmax+交叉熵求导为 ŷ−y，梯度与误差成正比；MSE 配 sigmoid/softmax 在两端饱和区梯度趋 0，收敛慢。",
+    src:" · 算法面经（“讲一下 softmax”）" },
+
+  // ===== 深度学习 =====
+  { cat:"深度学习", multi:false, q:"池化层（Pooling）的主要作用不包括？",
+    opts:["降低特征图尺寸与计算量","扩大感受野","引入非线性变换","提供平移 / 尺度不变性"], ans:[2],
+    exp:"池化是固定统计操作（取 max 或均值），不含可学习参数、本身不引入非线性；引入非线性靠激活函数。",
+    src:" · 算法面经" },
+  { cat:"深度学习", multi:false, q:"CNN 中 1×1 卷积核的作用是？",
+    opts:["扩大感受野","通道维变换（升 / 降维）并减少参数量","代替池化","防止过拟合"], ans:[1],
+    exp:"1×1 卷积对通道做线性组合实现升 / 降维并显著降低计算量；扩大感受野靠更大卷积核、空洞卷积或加深网络。",
+    src:" · 算法面经" },
+  { cat:"深度学习", multi:false, q:"关于 max 池化的反向传播，说法正确的是？",
+    opts:["梯度平均分配给所有输入","池化层没有梯度","梯度只回传给最大值位置，其余为 0","梯度全部给最小值位置"], ans:[2],
+    exp:"max 池化 forward 时记录最大值位置，backward 把上游梯度原样回传给该位置，其余位置为 0；平均池化则均分。",
+    src:" · 算法面经（卷积反传同题）" },
+  { cat:"深度学习", multi:false, q:"Softmax 输出的特性是？",
+    opts:["输出一定是 0 或 1","所有输出之和为 1","可以出现负数","与输入顺序无关"], ans:[1],
+    exp:"Softmax 把 logits 映射成和为 1 的概率分布（每个值在 0~1 之间），常用于多分类输出层。",
+    src:"【自出】· 常见考点" },
+  { cat:"深度学习", multi:false, q:"以下哪个不是常见的优化器？",
+    opts:["SGD","Softmax","Adam","RMSProp"], ans:[1],
+    exp:"Softmax 是输出层归一化函数，不是优化器；SGD、Adam、RMSProp 均为常用优化器。",
+    src:"【自出】· 常见考点" },
+  { cat:"深度学习", multi:false, q:"BERT 与 GPT 的核心区别是？",
+    opts:["两者结构完全相同","BERT 是 encoder-only 双向、适合理解类任务；GPT 是 decoder-only 单向自回归、适合生成","BERT 是生成模型、GPT 是理解模型","GPT 用掩码语言模型训练"], ans:[1],
+    exp:"BERT 通过 MLM+NSP 双向预训练，擅长分类 / 抽取等理解任务；GPT 用自回归方式预测下一 token，擅长生成。",
+    src:" · / NLP 岗高频" },
+  { cat:"深度学习", multi:false, q:"位置编码（Positional Encoding）的作用是？",
+    opts:["减少参数量","替代注意力机制","引入词序 / 位置信息","加速收敛到全局最优"], ans:[2],
+    exp:"Transformer 本身没有序列顺序概念，位置编码把 token 的位置信息注入表示，否则调换语序输出不变。",
+    src:" · LLM 岗高频" },
+  { cat:"深度学习", multi:false, q:"LSTM 中“遗忘门”的作用是？",
+    opts:["决定当前时刻的输出值","计算损失","决定丢弃 / 保留多少历史细胞状态信息","做归一化"], ans:[2],
+    exp:"遗忘门输出 0~1 的系数控制上一时刻细胞状态被保留的比例；输入门控制新信息写入，输出门控制读出。",
+    src:" · /高频" },
+  { cat:"深度学习", multi:false, q:"梯度裁剪（Gradient Clipping）主要用于解决？",
+    opts:["梯度消失","梯度爆炸","过拟合","欠拟合"], ans:[1],
+    exp:"梯度裁剪把梯度范数限制在阈值内，防止反向传播时梯度指数放大导致参数剧烈震荡，是梯度爆炸的常用解法。",
+    src:" · 高频" },
+  { cat:"深度学习", multi:false, q:"关于 Dropout，训练与推理阶段的正确处理是？",
+    opts:["训练不丢弃、推理丢弃","训练随机丢弃、推理不丢弃并按概率缩放权重","两阶段都丢弃","两阶段都不丢弃"], ans:[1],
+    exp:"训练按概率 p 随机丢弃神经元；推理保留全部神经元并将权重乘 p（inverted dropout 为训练时除以 p），保证输出期望一致。",
+    src:" · 算法面经（“Dropout 测试阶段如何处理”）" },
+  { cat:"深度学习", multi:false, q:"ResNet 残差连接能缓解梯度消失的关键原因是？",
+    opts:["增加了网络参数量","恒等捷径使梯度经加法直传，连乘变求和","使用了更小的学习率","去掉了激活函数"], ans:[1],
+    exp:"残差块 y=F(x)+x，恒等映射让梯度可经捷径直传，反向传播由连乘变为求和，深层也能训练，至少不比浅层差。",
+    src:" · /高频" },
+  { cat:"深度学习", multi:false, q:"BatchNorm 在推理阶段使用的是？",
+    opts:["当前 batch 的统计量","训练期滑动平均得到的全局均值方差","全部为 0","每层重新估计"], ans:[1],
+    exp:"训练用当前 batch 统计量归一化；推理用训练期滑动平均的全局 μ、σ，使 batch 大小为 1 时也能稳定推理。",
+    src:" · /高频" },
+  { cat:"深度学习", multi:false, q:"空洞卷积（Dilated Convolution）的主要优点是？",
+    opts:["不增加参数与计算量而扩大感受野","减少模型层数","自动做归一化","防止过拟合"], ans:[0],
+    exp:"空洞卷积在卷积核元素间注入空洞，不增加参数/计算量即可指数扩大感受野，常用于语义分割（DeepLab）；缺点是网格效应。",
+    src:" · 算法面经（含追问）" },
+
+  // ===== 大模型 =====
+  { cat:"大模型", multi:false, q:"自研 AI 芯片 AI 全栈自研的深度学习框架是？",
+    opts:["TensorFlow","PyTorch","自研深度学习框架","Caffe"], ans:[2],
+    exp:"自研 AI 框架 是自研的全场景 AI 框架，与自研 AI 芯片、自研 AI 计算工具链 深度协同；面自研芯片岗几乎必问。",
+    src:" · 自研芯片岗高频" },
+  { cat:"大模型", multi:false, q:"自研 AI 芯片对应的 AI 计算架构 / 工具链是？",
+    opts:["CUDA","TensorRT","cuDNN","自研 AI 计算工具链"], ans:[3],
+    exp:"自研 AI 计算工具链（异构计算架构）是自研 AI 芯片的使能层与算子开发工具链；CUDA / cuDNN / TensorRT 属 NVIDIA GPU 生态。",
+    src:" · 自研芯片岗高频" },
+  { cat:"大模型", multi:false, q:"BPE（Byte Pair Encoding）分词的核心操作是？",
+    opts:["按空格切分","反复合并语料中出现频次最高的相邻字符对","按拼音切分","随机切分子词"], ans:[1],
+    exp:"BPE 从字符 / 出发，迭代合并高频相邻 pair 直到词表达标，兼顾词表大小与 OOV 问题。",
+    src:" · LLM 岗高频" },
+  { cat:"大模型", multi:false, q:"RLHF 中 PPO 的 KL 散度惩罚项的主要作用是？",
+    opts:["加速训练收敛","约束策略不过度偏离原模型，防止奖励黑客","减少显存占用","提高分词效果"], ans:[1],
+    exp:"KL 惩罚让优化后的策略保持在参考模型附近，避免模型利用奖励模型漏洞输出高分但无意义的内容；β 过小漂移、过大对齐不足。",
+    src:" · // 高频" },
+  { cat:"大模型", multi:false, q:"大模型推理中 KV Cache 的主要作用是？",
+    opts:["降低模型精度","缓存历史 token 的 K/V，避免解码阶段重复计算","扩大词表","加快预训练"], ans:[1],
+    exp:"自回归解码每步只算新 token 的注意力，历史 K/V 缓存复用即可；代价是显存随序列长度线性增长。",
+    src:" · LLM 工程岗高频" },
+  { cat:"大模型", multi:false, q:"vLLM 采用 PagedAttention 主要解决什么问题？",
+    opts:["训练不稳定","KV Cache 的显存碎片与利用率问题","词表过大","类别不平衡"], ans:[1],
+    exp:"PagedAttention 把 KV Cache 按页管理（类似虚拟内存），减少显存碎片、提高批处理吞吐，是 vLLM 高吞吐的关键。",
+    src:" · LLM 工程岗高频" },
+  { cat:"大模型", multi:false, q:"RAG 流程中 rerank（重排）的作用是？",
+    opts:["模型量化","文本分词","对召回候选精排，提升检索精度","数据增强"], ans:[2],
+    exp:"向量检索先粗召回 top-k，rerank 用更精细的模型对候选排序，把真正相关的文档提到前面，提升最终回答质量。",
+    src:" · 大模型应用岗高频" },
+  { cat:"大模型", multi:false, q:"大模型微调中 LoRA 的核心思想是？",
+    opts:["冻结原权重，只训练低秩增量矩阵 ΔW=BA","全参数更新","只修改词表","删除部分层"], ans:[0],
+    exp:"LoRA 冻结预训练权重 W，只训练低秩分解的 A·B（rank r 远小于 d），参数量仅为 2×d×r，推理时可合并回 W。",
+    src:" · 大模型岗高频" },
+  { cat:"大模型", multi:false, q:"关于 RoPE（旋转位置编码），说法正确的是？",
+    opts:["按字符频次编码","仅 BERT 使用","不包含位置信息","用旋转矩阵编码相对位置，外推性更好"], ans:[3],
+    exp:"RoPE 把相对位置信息旋转编码进 Q/K 的点积中，训练长度外表现好、外推性优于绝对位置编码，LLaMA 系模型在用。",
+    src:" · //高频" },
+  { cat:"大模型", multi:false, q:"缓解大模型幻觉的有效手段不包括？",
+    opts:["RAG 检索增强","提示词约束（如“不知道就说不知道”）","事实核验 / 工具验证","增大解码温度"], ans:[3],
+    exp:"增大温度会提高采样随机性，更容易产生幻觉；其余手段均能降低幻觉概率。",
+    src:" · 高频" },
+  { cat:"大模型", multi:false, q:"SFT、RLHF、DPO 三者中，训练流程最简单且无需显式奖励模型的是？",
+    opts:["SFT","DPO","RLHF","预训练"], ans:[1],
+    exp:"DPO 把 RL 目标改写为偏好对上的分类损失，无需单独训练奖励模型和执行 PPO 采样，比 RLHF 简单稳定；SFT 是最基础的指令微调。",
+    src:" · 大模型岗高频" },
+  { cat:"大模型", multi:true, q:"【多选】缓解大模型幻觉的有效手段包括？",
+    opts:["RAG 检索增强","提示词约束","事实核验 / 工具验证","降低解码温度"], ans:[0,1,2,3],
+    exp:"RAG 外挂知识源、提示词约束输出行为、引入外部验证、降低温度减少采样随机性，均可降低幻觉概率。",
+    src:"【自出】· 大模型应用岗常见开放题" },
+  { cat:"大模型", multi:true, q:"【多选】一张卡放不下的大模型，常用的并行策略包括？",
+    opts:["数据并行（DP / ZeRO）","张量并行（TP）","流水线并行（PP）","混合专家（MoE）专家并行"], ans:[0,1,2,3],
+    exp:"四种并行分别按数据、层内矩阵、层间切分、专家维度切分；ZeRO 额外把优化器状态 / 梯度 / 参数分片，用通信换显存。",
+    src:" · LLM 岗高频 + 自研 AI 芯片相关" },
+  { cat:"大模型", multi:false, q:"FlashAttention 主要优化了什么？",
+    opts:["把词表缩小","分块计算注意力避免实例化完整 n×n 注意力矩阵，降低显存与 IO","自动剪枝","量化到 INT4"], ans:[1],
+    exp:"FlashAttention 用分块（tiling）计算注意力，不在 HBM 中实例化完整注意力矩阵，显存从 O(n²) 降到 O(n) 且更快。",
+    src:" · // 高频" },
+  { cat:"大模型", multi:false, q:"QLoRA 相比 LoRA 进一步省显存的关键做法是？",
+    opts:["冻结原权重并 4bit 量化","增大秩 r","删掉注意力层","用 CPU 推理"], ans:[0],
+    exp:"QLoRA 在 LoRA 基础上把冻结的预训练权重量化到 4bit（nf4）进一步省显存，只训练低秩增量，兼顾效果与显存。",
+    src:" · 大模型岗高频" },
+  { cat:"大模型", multi:false, q:"ReAct 框架的核心循环是？",
+    opts:["只生成一次回答","Thought（推理）→ Action（行动）→ Observation（观察）交替循环","只检索不生成","先微调再推理"], ans:[1],
+    exp:"ReAct 让模型在推理与行动间交替：先思考下一步，调用工具行动，观察结果，再继续推理，直至完成任务。",
+    src:" ·  Agent 开发岗高频" },
+
+  // ===== CV 与 NLP =====
+  { cat:"CV与NLP", multi:false, q:"两阶段（Faster R-CNN）与一阶段（YOLO）目标检测的主要区别是？",
+    opts:["两者完全相同","两阶段先 RPN 提候选框再精修，精度高；一阶段网格直接回归，速度快但正负样本不平衡","一阶段精度更高","两阶段不输出类别"], ans:[1],
+    exp:"两阶段正负样本更均衡、定位更精细；一阶段快但样本极度不平衡，Focal Loss 用以缓解一阶段样本不平衡。",
+    src:" · CV 岗高频" },
+  { cat:"CV与NLP", multi:false, q:"NMS（非极大值抑制）的标准流程是？",
+    opts:["按面积排序删除小框","按置信度排序，取最高框，删除与其 IoU>阈值的框，重复","随机删除一半框","合并所有框"], ans:[1],
+    exp:"NMS 按置信度排序→取最高框→删除与其 IoU 超阈值的冗余框→重复，直至无重叠；可扩展为 Soft-NMS（衰减而非删除）。",
+    src:" · CV 岗高频（手撕 NMS）" },
+  { cat:"CV与NLP", multi:false, q:"Word2Vec 中 Skip-gram 相比 CBOW 更适合？",
+    opts:["小语料且训练快","大语料，对罕见词表示更好","只能处理中文","不需要负采样"], ans:[1],
+    exp:"CBOW 用上下文预测中心词，适合小语料、快；Skip-gram 用中心词预测上下文，适合大语料、对罕见词更好；负采样解决词表过大。",
+    src:" · /NLP 岗高频" },
+  { cat:"CV与NLP", multi:false, q:"BERT 预训练时 MLM 的 15% 被选 token 中，80%  [MASK] 的原因是？",
+    opts:["减少词表","让模型学预测被掩词，同时 10% 随机替换 + 10% 保持不变以防过度依赖 [MASK] 标记","加速收敛","防止梯度爆炸"], ans:[1],
+    exp:"80% 换 [MASK] 学预测、10% 随机替换缓解训练/推理 mask 不一致、10% 保持不变拉向真实表征，防止模型只依赖 [MASK]。",
+    src:" · / NLP 岗高频" },
+  { cat:"CV与NLP", multi:false, q:"Canny 边缘检测的正确流程顺序是？",
+    opts:["梯度→高斯→阈值→非极大值","高斯滤波去噪→梯度幅值与方向→非极大值抑制→双阈值与滞后连接","二值化→腐蚀→膨胀","傅里叶变换→反变换"], ans:[1],
+    exp:"Canny：高斯滤波去噪 → Sobel 算梯度幅值与方向 → 非极大值抑制细化边缘 → 双阈值检测与滞后连接补全边缘。",
+    src:" · 算法面经（原题“Canny 算子”）" },
+  { cat:"CV与NLP", multi:false, q:"人脸识别损失函数演进的大致顺序是？",
+    opts:["ArcFace→Softmax→Center Loss","Softmax→Center Loss→Triplet Loss→ArcFace（角度间隔 margin）","Triplet→Softmax→Center","只有 Softmax"], ans:[1],
+    exp:"Softmax 交叉熵→Center Loss（类内紧凑）→Triplet Loss（锚-正-负）→ArcFace/CosFace（角度间隔 margin，类间分离），核心是拉近同类、推远异类。",
+    src:" · 算法面经（面试官做人脸识别）" },
+  { cat:"CV与NLP", multi:false, q:"序列标注为什么用 CRF 解码比贪心解码好？",
+    opts:["CRF 训练更快","CRF 全局归一化，考虑标签间约束（如 B 后不能直接跟 I），可用维特比求全局最优","贪心解码更准确","CRF 不需要标签"], ans:[1],
+    exp:"CRF 建模标签序列的转移与发射特征并全局归一化，维特比解码考虑标签间约束、保证合法序列；贪心只看单点最优。",
+    src:" · / NLP 岗" },
+
+  // ===== 数学基础 =====
+  { cat:"数学基础", multi:false, q:"圆周上随机取 3 个点组成锐角三角形的概率是？",
+    opts:["1/2","1/4","1/3","1/8"], ans:[1],
+    exp:"三点成锐角三角形当且仅当不同处同一半圆内；三点落在同一半圆的概率为 3/4，故锐角概率 1−3/4=1/4。",
+    src:" · 算法岗实习面" },
+  { cat:"数学基础", multi:false, q:"抛硬币直到连续出现两次正面为止，平均要抛多少次？",
+    opts:["4 次","6 次","8 次","14 次"], ans:[1],
+    exp:"设 E0/E1 为当前已连续 0/1 次正面的剩余期望，列递归方程求解，连续两次正面期望=6 次（连续三次=14 次）。",
+    src:" · 高频概率题（汇总）" },
+  { cat:"数学基础", multi:false, q:"均匀分布 U(0,1) 生成标准正态分布的方法是？",
+    opts:["中心极限定理直接求和一个均匀变量","Box-Muller：Z=√(−2ln U1)·cos(2πU2)","线性缩放即可","取最大值"], ans:[1],
+    exp:"Box-Muller 用两个独立 U(0,1) 经 Z=√(−2ln U1)·cos(2πU2) 等生成独立标准正态；中心极限定理求和多个均匀变量近似但精度低。",
+    src:" · 概率题汇总" },
+  { cat:"数学基础", multi:false, q:"极大似然估计（MLE）与最大后验估计（MAP）的关系是？",
+    opts:["两者完全等价","先验为均匀分布时 MAP 等于 MLE；MAP 引入先验","MAP 不需要数据","MLE 引入先验"], ans:[1],
+    exp:"MLE 最大化 P(数据|θ)；MAP 最大化 P(θ|数据)∝P(数据|θ)P(θ) 引入先验。先验均匀时 MAP=MLE；L2 正则等价高斯先验 MAP，L1 等价拉普拉斯先验。",
+    src:" · 高频" },
+  { cat:"数学基础", multi:false, q:"信息熵 H(X)=−Σp(x)log p(x) 表示什么？",
+    opts:["分布越均匀熵越大，表示不确定性越大","分布越确定熵越大","熵总是常数","熵等于方差"], ans:[0],
+    exp:"分布越均匀，不确定性越大，熵越大；确定分布熵为 0。决策树分裂（信息增益）就是熵减过程，交叉熵/KL 散度也源于此。",
+    src:" · /高频" },
+  { cat:"数学基础", multi:false, q:"PCA 降维时取的投影方向是协方差矩阵的？",
+    opts:["最小特征值对应特征向量","最大特征值对应特征向量","任意行向量","零向量"], ans:[1],
+    exp:"PCA 对协方差矩阵做特征分解，取最大特征值对应的特征向量为投影方向（最大方差方向），实现降维并保留最多信息。",
+    src:"【自出】· 常见线代考点" },
+  { cat:"数学基础", multi:false, q:"梯度下降中沿负梯度方向更新的理由是？",
+    opts:["负梯度计算最快","由一阶泰勒展开，负梯度是函数下降最快的方向","负梯度恒为零","负梯度避免过拟合"], ans:[1],
+    exp:"梯度是函数增长最快方向，由一阶泰勒展开可知负梯度方向下降最快，故 θ←θ−η∇L；学习率过大震荡发散，过小收敛极慢。",
+    src:"【自出】· 最优化高频基础题" },
+
+  // ===== 项目深挖 =====
+  { cat:"项目深挖", multi:false, q:"回答“讲讲你的项目”较好的结构是？",
+    opts:["只讲技术细节","一句话背景→问题与难点→技术方案→量化结果与反思","念简历","只讲结果"], ans:[1],
+    exp:"面试官会顺着每个点追问，框架为：一句话背景（任务+角色+结果）→问题定义与难点→技术方案（为什么这么选）→量化结果与反思；没做过的细节别吹。",
+    src:" ·  AI 工程师三面" },
+  { cat:"项目深挖", multi:false, q:"被问“项目中最困难的事”时，较好的答题方法是？",
+    opts:["编一个夸张的故事","用 STAR 结构讲真实有细节的案例，突出定位问题方法与量化收益","说没有困难","只讲情绪"], ans:[1],
+    exp:"用 STAR（情境→任务→行动→结果）讲真实案例，突出数据分析/ablation 定位问题、权衡取舍与最终量化收益，具体到数字；主管面高频。",
+    src:" · 主管面" },
+  { cat:"项目深挖", multi:false, q:"解释项目指标提升归因时，最应强调的是？",
+    opts:["一定是模型变强","用消融实验（ablation）支撑，说清是数据/模型/调参并验证统计显著性","不用解释","靠直觉"], ans:[1],
+    exp:"说清指标定义（离线/在线）、baseline 对比、A/B 实验；提升归因用消融实验支撑，警惕样本选择偏差/数据泄漏；补充失败经验同样加分。",
+    src:" · 技术面常见追问" },
+  { cat:"项目深挖", multi:false, q:"面试官问“为什么选这个模型不选那个”，较好的回答维度是？",
+    opts:["只说更先进","从数据量、任务类型、延迟/成本约束、可解释性四维度答，并对比过候选 baseline","凭个人喜好","说大家都用"], ans:[1],
+    exp:"从数据量、任务类型、延迟/成本约束、可解释性四维度答，结合算力（场景：自研 NPU 算子支持、自研 AI 框架 生态）；选型是约束下的最优解而非最先进。",
+    src:" · /高频开放题" },
+
+  // ===== 行为与 HR =====
+  { cat:"行为HR", multi:false, q:"被问“为什么选择”，较好的回答是？",
+    opts:["背价值观口号","结合 /自研 AI 芯片/大模型投入与价值观，讲“为什么是而不是其他公司”的具体差异","只谈薪资","泛泛而谈"], ans:[1],
+    exp:"技术层面讲 /自研 AI 芯片/大模型投入与成长空间；价值观真诚结合具体理由；避免空话套话，讲“为什么是而非其他公司”的具体差异，表达长期留任意愿。",
+    src:" ·  HR/主管面高频" },
+  { cat:"行为HR", multi:false, q:"被问“如何看待的工作强度和加班文化”，较好的态度是？",
+    opts:["表演式热情“以公司为家”","表示理解并接受，强调目标导向、能用过往经历佐证，前后一致","明确“我很看重 work-life balance”","拒绝回答"], ans:[1],
+    exp:"表示理解并接受（），强调自己目标导向、能扛项目节奏；避免表演式热情和明显不匹配的 WLB 信号；用过往冲刺经历佐证，回答要真实且前后一致。",
+    src:" · 主管面高频" },
+  { cat:"行为HR", multi:false, q:"被问“未来希望在哪个城市发展”，较好的做法是？",
+    opts:["含糊其辞","明确给出可接受城市范围（深圳/东莞/上海/北京/成都/西安等），表达外派开放性并给偏好排序","说哪里都行但不愿外派","拒绝回答"], ans:[1],
+    exp:"明确可接受城市范围，表达接受外派/调岗的开放性并给偏好排序；会记录意向地，前后不一致被视为不稳定；结合家庭/发展给真诚理由。",
+    src:" · 主管面高频" },
+  { cat:"行为HR", multi:false, q:"反问环节（“你有什么问题问我吗”），以下较合适的是？",
+    opts:["不问","只问薪资福利","问部门核心方向、大模型/自研 AI 芯片投入、胜任岗位看重的品质、晋升路径","问可答的问题"], ans:[2],
+    exp:"问业务/团队（核心方向、大模型/自研 AI 芯片投入、新人对齐目标）与成长（看重品质、晋升路径）；避免不问、只问薪资、问可答题；反问是加分项。",
+    src:" · 各轮面试必问" },
+  { cat:"行为HR", multi:false, q:"用 STAR 方法描述经历时，四要素是？",
+    opts:["速度、时间、准确、复盘","情境(S)→任务(T)→行动(A)→结果(R)","学校、专业、技能、推荐人","开始、过程、分析、收尾"], ans:[1],
+    exp:"STAR：Situation 情境背景、Task 你的任务责任、Action 具体行动与取舍、Result 量化结果与反馈；面经强调四要素缺一不可、清晰可辨。",
+    src:" · 面经（行为面）" },
+  { cat:"行为HR", multi:false, q:"被问“入职后安排与预期（如研究方向）不符怎么办”，较好的回答是？",
+    opts:["明确表示不接受调岗","先服从组织安排、从基础做起，主动学习新方向并迁移现有技能，强调结果导向","当场要求换组","表示无所谓"], ans:[1],
+    exp:"先表达服从组织安排、从基础做起；说明会主动学习新方向、迁移现有技能；强调结果导向而非岗位名称；避免表达不接受调岗或过度理想化。",
+    src:"【自出】· 稳定性考察常见变体" },
+];
+
+/* ================= MCQ 应用逻辑 ================= */
+const $q = id => document.getElementById(id);
+const LETTERS = ["A","B","C","D"];
+document.getElementById("totalN").textContent = QUESTIONS.length;
+
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+
+const savedOrder = (() => { try { const s = localStorage.getItem("aiQuizOrder"); return s ? JSON.parse(s) : null; } catch(e){ return null; } });
+let order = (() => { const s = savedOrder(); return (s && s.length === QUESTIONS.length) ? s : QUESTIONS.map((_,i)=>i); })();
+let idx = 0, score = 0, answered = false;
+
+function renderQuiz(){
+  answered = false;
+  const q = QUESTIONS[order[idx]];
+  $q("progress").style.width = (idx / QUESTIONS.length * 100) + "%";
+  $q("counter").textContent = "第 " + (idx+1) + " / " + QUESTIONS.length + " 题";
+  $q("qcount").textContent = "";
+  $q("cat").textContent = q.cat + (q.multi ? " · 多选" : " · 单选");
+  $q("qtext").textContent = q.q;
+  const list = $q("opts"); list.innerHTML = "";
+  q.opts.forEach((opt,i)=>{
+    if(q.multi){
+      const label = document.createElement("label"); label.className="opt";
+      label.innerHTML = '<input type="checkbox" value="'+i+'"><span class="letter">'+LETTERS[i]+'</span><span class="txt">'+opt+"</span>";
+      list.appendChild(label);
+    } else {
+      const btn = document.createElement("button"); btn.className="opt";
+      btn.innerHTML = '<span class="letter">'+LETTERS[i]+'</span><span class="txt">'+opt+"</span>";
+      btn.onclick = ()=>submitSingle(i); list.appendChild(btn);
+    }
+  });
+  $q("submitMulti").style.display = q.multi ? "block" : "none";
+  $q("feedback").className=""; $q("feedback").innerHTML="";
+  $q("next").style.display="none";
+  $q("score").textContent = "答对 " + score + " / " + idx;
+}
+function showFeedback(ok,title,expHtml){
+  const fb=$q("feedback"); fb.className="show "+(ok?"ok":"no");
+  fb.innerHTML='<div class="fb-title">'+title+'</div><div class="exp">'+expHtml+'</div>';
+}
+function submitSingle(i){
+  if(answered) return; answered=true;
+  const q=QUESTIONS[order[idx]]; const btns=$q("opts").querySelectorAll(".opt");
+  btns.forEach((b,j)=>{ b.classList.add("locked"); if(j===q.ans[0]) b.classList.add("right"); if(j===i && i!==q.ans[0]) b.classList.add("wrong"); });
+  const ok = i===q.ans[0]; if(ok) score++;
+  showFeedback(ok, ok?"✅ 回答正确！":"❌ 回答错误。", '<b>正确答案：'+LETTERS[q.ans[0]]+'</b>　'+q.exp + '<span class="src">来源：'+q.src+'</span>');
+  $q("next").style.display="block";
+  $q("score").textContent = "答对 " + score + " / " + (idx+1);
+}
+function submitMulti(){
+  if(answered) return; answered=true;
+  const q=QUESTIONS[order[idx]]; const boxes=$q("opts").querySelectorAll("input[type=checkbox]");
+  const sel=[]; boxes.forEach((b,j)=>{ if(b.checked) sel.push(j); b.disabled=true; });
+  const ans=q.ans.slice().sort().join(","), mine=sel.slice().sort().join(","); const ok = ans===mine; if(ok) score++;
+  const btns=$q("opts").querySelectorAll(".opt");
+  btns.forEach((b,j)=>{ if(q.ans.includes(j)) b.classList.add("right"); else if(b.querySelector("input").checked) b.classList.add("wrong"); });
+  const rightLetters=q.ans.map(j=>LETTERS[j]).join("、");
+  showFeedback(ok, ok?"✅ 回答正确！":"❌ 回答错误。", '<b>正确答案：'+rightLetters+'</b>　'+q.exp + '<span class="src">来源：'+q.src+'</span>');
+  $q("submitMulti").style.display="none"; $q("next").style.display="block";
+  $q("score").textContent = "答对 " + score + " / " + (idx+1);
+}
+$q("submitMulti").onclick = submitMulti;
+$q("next").onclick = ()=>{ idx++; if(idx>=QUESTIONS.length) showFinal(); else renderQuiz(); };
+function showFinal(){
+  const pct=Math.round(score/QUESTIONS.length*100);
+  const msg = pct===100?"满分！直接去面试吧 🎉": pct>=80?"非常扎实，保持状态 🚀": pct>=60?"基础不错，把错题解析再过一遍 💪":"重点复习错题解析，再来一轮 📖";
+  const card=document.querySelector("#quiz .card");
+  card.innerHTML='<div class="final"><div class="big">'+(pct>=60?"🎉":"📖")+'</div>'
+    +'<h2>本轮完成！</h2>'
+    +'<div class="stat">答对 <b>'+score+'</b> / '+QUESTIONS.length+' 题（'+pct+'%）</div>'
+    +'<div class="stat">'+msg+'</div>'
+    +'<button class="again" onclick="restartQuiz(false)">🔄 再练一次（原顺序）</button>'
+    +'<button class="again ghost" onclick="restartQuiz(true)">🔀 随机顺序重练</button></div>';
+  $q("progress").style.width="100%";
+  $q("score").textContent = "答对 " + score + " / " + QUESTIONS.length;
+}
+function restartQuiz(random){
+  if(random){ const o=QUESTIONS.map((_,i)=>i); shuffle(o); localStorage.setItem("aiQuizOrder",JSON.stringify(o)); }
+  else { localStorage.removeItem("aiQuizOrder"); }
+  location.reload();
+}
+document.addEventListener("keydown",(e)=>{
+  if(document.getElementById("quiz").style.display==="none") return;
+  if(answered || QUESTIONS[order[idx]].multi) return;
+  const j=["A","B","C","D"].indexOf(e.key.toUpperCase());
+  if(j>=0){ const btns=$q("opts").querySelectorAll(".opt"); if(btns[j]) btns[j].click(); }
+});
+
+/* =====================================================================
+   Q&A 数据：73 道题库（THIN-1），题目 → 考察点 → 参考思路要点，可折叠展开。
+   mark: 本地两档记忆标记（yes 已记住 / no 未记住），与算法区一致。
+   ===================================================================== */
+const QA = [
+  // 一、机器学习基础
+  {cat:"机器学习",q:"什么是过拟合和欠拟合？分别怎么解决？",point:"模型泛化、偏差方差权衡",
+   ans:"过拟合＝训练好测试差，欠拟合＝两者都差。过拟合解法：加数据/数据增强、正则化（L1/L2/dropout/early stopping）、简化模型、交叉验证、集成。欠拟合解法：增加特征/模型复杂度、减小正则化强度、换更强模型。",
+   src:" · 技术面开场题（/知乎面经汇总）"},
+  {cat:"机器学习",q:"L1、L2 正则化的作用和区别？为什么 L2 能让权重变小从而防止过拟合？",point:"正则化原理",
+   ans:"都在损失加复杂度惩罚项防过拟合。L1 是权重绝对值之和，产生稀疏解（特征选择）；L2 是平方和，使权重平滑趋小但不为 0。L2 视角：过拟合时拟合函数波动剧烈、导数大需大系数，限制参数范数可抑制，也符合奥卡姆剃刀。求解：L1 零点不可导形成稀疏；L2 梯度每步等比缩小权重（权重衰减）。",
+   src:" · 算法面经（“l1 l2 的作用和区别”）"},
+  {cat:"机器学习",q:"Dropout 的原理？训练和测试阶段分别怎么处理？",point:"正则化与训练/推理差异",
+   ans:"训练时按概率 p 随机丢弃神经元，防止共适应、相当于集成多个子网络。测试时不再丢弃，为保持期望输出一致需将权重乘 p（inverted dropout 则训练时除以 p）。可与 BN 搭配，注意顺序（一般 BN 后接 dropout）。",
+   src:" · 算法面经（“Dropout 在测试阶段如何处理”）"},
+  {cat:"机器学习",q:"讲一下查准率（Precision）、查全率（Recall）、F1 和 AUC",point:"分类评估指标",
+   ans:"由混淆矩阵：P=TP/(TP+FP)，R=TP/(TP+FN)，F1=2PR/(P+R)。P/R 相互制约，F1 是调和平均、对不平衡更稳。AUC＝ROC 下面积，衡量正负样本排序能力、对阈值不敏感。场景选择：宁错杀（高 P）还是宁放过（高 R）。",
+   src:" · 算法面经（“查准率查全率 F1score”）"},
+  {cat:"机器学习",q:"简单讲一下 softmax，为什么分类常用交叉熵损失而不是 MSE？",point:"损失函数与梯度",
+   ans:"softmax 把 logits 映射为概率分布，和=1。交叉熵+softmax 求导形式简洁（ŷ−y），梯度与误差成正比、收敛快。MSE 配 sigmoid/softmax 在两端梯度饱和为 0、收敛慢。交叉熵有信息论解释（分布距离度量）。",
+   src:" · 算法面经（“讲一下 softmax”）"},
+  {cat:"机器学习",q:"逻辑回归（LR）和 SVM 的区别？各自适用场景？",point:"经典分类算法对比",
+   ans:"损失函数不同：LR 用对数损失，SVM 用 hinge loss。LR 输出概率、可解释、支持在线更新；SVM 由支持向量决定、几何间隔最大化，适合小样本高维。LR 对异常值更敏感（所有样本参与），SVM 更鲁棒。非线性：SVM 靠核函数，LR 靠特征工程。",
+   src:" · //算法岗高频（  宝典）"},
+  {cat:"机器学习",q:"什么是偏差（Bias）和方差（Variance）？如何权衡？",point:"模型误差分解",
+   ans:"泛化误差＝偏差²＋方差＋噪声。偏差大＝模型太简单欠拟合，方差大＝模型太复杂过拟合。权衡手段：正则化强度、模型复杂度、集成（bagging 降方差、boosting 降偏差）。",
+   src:" · //算法岗高频"},
+  {cat:"机器学习",q:"GBDT 和 XGBoost 的区别？XGBoost 为什么快、为什么不容易过拟合？",point:"集成学习、树模型",
+   ans:"XGBoost 对损失做二阶泰勒展开（GBDT 只一阶），精度更高、支持自定义损失。目标函数显式加正则项（叶子数+叶子权重 L2），相当于预剪枝防过拟合。支持行采样/列采样、shrinkage。速度：特征分裂点并行、预排序/直方图、缓存优化、自动处理缺失值。",
+   src:" · //高频"},
+  {cat:"机器学习",q:"为什么排序模型常从 LR 演进到 GBDT 再到 DNN？",point:"模型选型演进逻辑",
+   ans:"LR 简单可解释、好上线做基线。GBDT 自动做特征组合/非线性、对数值特征友好，但无法直接处理海量稀疏 ID 特征。DNN（如 DeepFM）通过 embedding 学习高阶特征交互，适合海量稀疏特征。实际按数据规模、特征工程成本、延迟预算迭代。",
+   src:" · /高频"},
+  {cat:"机器学习",q:"哪些算法不需要做特征归一化？为什么？",point:"特征工程",
+   ans:"树模型（决策树/GBDT/RF）不需要：按特征值分裂，对单调变换不敏感、不关心量纲。基于距离/梯度类（SVM、LR、KNN、KMeans、神经网络）需要归一化，否则量纲大的特征主导距离/梯度。常用 min-max、z-score。",
+   src:" · 机器学习工程师面试题"},
+  {cat:"机器学习",q:"生成模型和判别模型的区别？先验概率和后验概率是什么、能否转换？",point:"模型分类与贝叶斯",
+   ans:"生成模型建模联合分布 P(X,Y)，可生成样本（朴素贝叶斯、HMM、GAN）；判别模型直接建模 P(Y|X) 或决策边界（LR、SVM、CRF）。先验 P(Y) 是观察前信念，后验 P(Y|X) 是观察后修正的。通过贝叶斯公式 P(Y|X)=P(X|Y)P(Y)/P(X) 转换。",
+   src:" · /高频"},
+  {cat:"机器学习",q:"【自出】手撕：KMeans 聚类的原理与实现要点；如何选 K、初始化中心？",point:"无监督学习、聚类编程题",
+   ans:"流程：初始化 K 中心→分配最近簇→更新中心→迭代至收敛。距离常用欧氏距离，目标 SSE。选 K：肘部法则/轮廓系数。初始化：KMeans++（初始中心尽量分散）、多次随机跑取最优。手撕注意空簇处理、收敛条件。",
+   src:"【自出】·  AI 机考多次考聚类（YOLO anchor 聚类、基站聚类），手撕过 KMeans"},
+
+  // 二、深度学习
+  {cat:"深度学习",q:"为什么会出现梯度消失和梯度爆炸？怎么解决？",point:"深度网络训练稳定性（必考）",
+   ans:"反向传播连乘导致：层数深、激活导数在 (0,1) 且权重小→梯度消失；权重/导数>1 指数放大→梯度爆炸。解决：合理初始化（Xavier/He）、BN、残差连接、ReLU 系激活、梯度裁剪（爆炸）、LSTM 门控。区分前馈网络与 RNN 的梯度消失机理（时间步雅可比连乘）。",
+   src:" ·  AI 工程师一面（面经）；三面同类题"},
+  {cat:"深度学习",q:"CNN 中 1×1 卷积核的作用？",point:"CNN 基础",
+   ans:"通道维度的线性组合，可升维/降维；减少参数量和计算量；引入非线性（后接激活）；替代全连接层（NIN/GoogLeNet）；实现跨通道信息融合。",
+   src:" · 算法面经（“1×1 卷积核的作用”）"},
+  {cat:"深度学习",q:"卷积层怎么反向传播？介绍一个你熟悉的 CNN 网络",point:"CNN 原理深度",
+   ans:"链式法则：对输入的梯度＝输出梯度与旋转 180° 的卷积核做卷积（im2col 视角更直观）；对权重的梯度＝输入与输出梯度的相关。熟悉模型可讲 ResNet：残差块、瓶颈结构、解决退化/梯度消失。",
+   src:" · 算法面经（“卷积怎么反向传播”）"},
+  {cat:"深度学习",q:"什么是感受野？池化层的作用？",point:"CNN 概念",
+   ans:"感受野＝输出特征图某点对应输入图像的区域大小，越大上下文越多。扩大感受野：加深网络、空洞卷积、增大卷积核。池化：降维降计算量、扩大感受野、提供平移/尺度不变性、防过拟合。池化反传：max 给最大值位置，平均均分。",
+   src:" · 算法面经（“什么是感受野”“池化层的作用”）"},
+  {cat:"深度学习",q:"空洞卷积相比普通卷积有何不同？特征图很小时怎么处理？",point:"CNN 变体",
+   ans:"空洞卷积不增加参数/计算量而指数扩大感受野，常用于语义分割（DeepLab）。缺点：网格效应、局部信息连续性受损。特征图很小、加 padding 引入太多无效信息时：改用普通卷积堆叠、上采样后再卷积、或减小空洞率。",
+   src:" · 算法面经（含追问）"},
+  {cat:"深度学习",q:"常见激活函数及区别？为什么 ReLU 系成为主流？",point:"激活函数",
+   ans:"sigmoid/tanh：饱和区梯度消失，sigmoid 输出非零中心。ReLU：计算快、正区间梯度恒 1 缓解消失、稀疏激活，但负区间神经元死亡。改进：LeakyReLU/PReLU/ELU/Swish/GELU。输出层按任务：二分类 sigmoid、多分类 softmax、回归线性。",
+   src:" · /高频"},
+  {cat:"深度学习",q:"BatchNorm 的工作过程？训练和推理有什么区别？为什么能加速收敛/抑制过拟合？",point:"归一化",
+   ans:"对每个 batch 在通道维求均值方差→归一化→学习缩放平移参数 γ、β。训练用 batch 统计量，推理用滑动平均的全局统计量。加速收敛：缓解内部协变量偏移、平滑损失曲面、允许更大学习率。有轻微正则化效果（batch 统计量噪声），小 batch 效果变差。",
+   src:" · /高频"},
+  {cat:"深度学习",q:"残差网络（ResNet）为什么能解决梯度消失和网络退化？",point:"网络结构",
+   ans:"残差块输出 y=F(x)+x，恒等映射使梯度经捷径直传，连乘变求和，缓解梯度消失。退化问题：深层至少能学成恒等映射，不会比浅层差。实践上让上百层网络可训练。",
+   src:" · /高频"},
+  {cat:"深度学习",q:"LSTM 为什么能缓解 RNN 的梯度消失/爆炸？讲一下三个门",point:"序列模型",
+   ans:"RNN 梯度消失源于时间步雅可比矩阵连乘导致梯度指数衰减。LSTM 引入细胞状态 C 与门控：遗忘门 f、输入门 i、输出门 o，通过加性更新让梯度沿细胞状态直线传播，缓解消失。遗忘门控制历史信息保留，输入门控制新信息写入，输出门控制读出。",
+   src:" · /高频"},
+  {cat:"深度学习",q:"常见优化器对比：SGD / Momentum / RMSProp / Adam",point:"优化器",
+   ans:"SGD 简单但收敛慢、易震荡。Momentum 累积历史梯度方向加速、抑制震荡。RMSProp/Adagrad 按参数自适应学习率。Adam=动量+自适应学习率，收敛快、超参鲁棒，但泛化有时不如调好的 SGD+Momentum。大模型训练常见 AdamW（解耦权重衰减）。",
+   src:" · /高频"},
+  {cat:"深度学习",q:"手撕：卷积/池化/BN 的 forward 与 backward（以 max pooling 为例）",point:"手撕底层实现",
+   ans:"max pooling forward：双循环取窗口最大值并记录索引；backward：把上游梯度放回最大值位置，其余为 0。卷积 forward 可用 im2col+矩阵乘实现。边界条件（padding/stride）要处理对。先讲思路再写码，注意代码规范。",
+   src:" · /CV 岗高频"},
+  {cat:"深度学习",q:"【自出】PyTorch 和 TensorFlow 的区别？Numpy 数组和 PyTorch Tensor 的区别？",point:"框架基础",
+   ans:"PyTorch 动态图、调试友好、生态主流；TF 静态图/2.x 动态图、生产部署工具链全。Tensor 支持 GPU 加速、自动求导（requires_grad）、图构建，Numpy 纯 CPU 计算无自动求导。体系可能追问 自研 AI 框架：端云统一、动静统一、自动并行，与自研 AI 芯片深度协同。",
+   src:"（变形）· 算法面经原题 + 【自出】补充 自研 AI 框架"},
+
+  // 三、大模型 LLM
+  {cat:"大模型",q:"详述 Transformer 的 Self-Attention：Q/K/V 是什么？为什么除以 √d_k？多头注意力的意义？",point:"Transformer 原理（必考）",
+   ans:"输入经三个线性投影得 Q/K/V，注意力权重=softmax(QKᵀ/√d_k)V。除以 √d_k 防止点积随维度增大而方差过大、softmax 落入饱和区梯度消失。多头让模型在不同子空间捕获不同类型依赖，类似多个视角。相比 RNN/CNN 能直接建模长距离依赖，但复杂度 O(n²)。",
+   src:" · // LLM 岗高频"},
+  {cat:"大模型",q:"位置编码的作用？讲一下 RoPE 和 ALiBi",point:"位置编码（LLM 岗 100% 会问）",
+   ans:"Transformer 无位置信息，需注入位置编码。绝对位置编码（sinusoidal/可学习）。RoPE：用旋转矩阵把相对位置信息编码进 Q/K 的点积，外推性更好，LLaMA 系在用。ALiBi：给注意力分数加与距离线性相关的偏置，无需训练即可外推长文本。",
+   src:" · //高频"},
+  {cat:"大模型",q:"BPE（Byte Pair Encoding）分词原理？中文分词注意什么？",point:"Tokenization",
+   ans:"初始为字符/，反复合并频次最高的相邻 pair 直到词表大小达标。优点：平衡词表大小与 OOV。中文：字/子词切分粒度、预分词策略、词表覆盖常用字与词。可追问：为什么 GPT 用 BPE，SentencePiece 与 BPE 区别（无监督、Unigram 语言模型）。",
+   src:" · LLM 岗高频"},
+  {cat:"大模型",q:"Pre-train、SFT、RLHF 的区别？为什么 SFT 之后还要 RL？",point:"训练流程与对齐",
+   ans:"预训练：海量文本学语言能力（next token prediction）；SFT：指令数据学“按指令回答”；RLHF：偏好数据对齐人类价值观、提升有用性/无害性。只做 SFT 的局限：难以表达复杂偏好（“更好”是相对概念）、只能模仿标注分布、无法优化多轮/开放式目标。RLHF 直接以偏好反馈为目标优化。",
+   src:" · // 高频"},
+  {cat:"大模型",q:"RLHF 三阶段流程是什么？奖励模型怎么训练（Bradley-Terry）？为什么用 PPO？",point:"RLHF 深度",
+   ans:"三阶段：SFT → 训练奖励模型 RM（成对比较数据，损失≈log σ(r_x−r_y) 的 Bradley-Terry 排序损失）→ PPO 强化学习微调。用成对比较而非绝对分数：标注者更易做相对判断、方差小。用 PPO：裁剪目标稳定策略更新、KL 惩罚防止模型偏离原分布（奖励黑客）。β 过小漂移，过大对齐不足。",
+   src:" · // 高频"},
+  {cat:"大模型",q:"SFT、RLHF、DPO 的对比？DPO 的核心思想？",point:"对齐技术选型",
+   ans:"SFT 成本低但上限有限；RLHF 效果好但流程复杂、训练不稳定（需 RM+PPO 两套模型）。DPO：把 RL 目标改写为直接基于偏好对的分类损失，无需显式 RM 和 RL 训练，简单稳定。局限：无 RM 的额外信号、对偏好数据质量敏感。实际常 SFT→DPO/RLHF 组合。",
+   src:" · 高频"},
+  {cat:"大模型",q:"详细说下 RAG 的流程？如何缓解幻觉？",point:"RAG（应用岗必考）",
+   ans:"流程：文档切块(chunk)→embedding→向量库存储；查询时 query embedding 检索 top-k→重排(rerank)→拼进 prompt→LLM 生成，答案带引用。切块策略、相似度函数（余弦）、rerank 必要性。缓解幻觉：检索质量（分块/embedding/rerank）、限定知识源、提示词约束、答案引用校验、模型评估闭环。与微调：RAG 适合知识更新频繁，微调适合风格/能力。",
+   src:" · 高频"},
+  {cat:"大模型",q:"什么是 Agent？ReAct 框架原理？Function Calling 和 MCP 是什么？",point:"Agent（2025-2026 高频）",
+   ans:"Agent=LLM+规划+工具+记忆+执行闭环，Workflow 是固定 DAG、Agent 由模型动态决策。ReAct：推理(Thought)→行动(Action)→观察(Observation)循环交替。Function Calling：模型输出结构化调用指令选择工具；MCP 是标准化工具/资源协议，解决工具接入碎片化。常追问：多 Agent 协作、记忆管理、幻觉与工具失败兜底。",
+   src:" ·  Agent 开发岗高频"},
+  {cat:"大模型",q:"推理加速：KV Cache 原理？FlashAttention 优化了什么？vLLM 的 PagedAttention？",point:"推理优化（面 LLM 公司必问）",
+   ans:"KV Cache：解码阶段缓存历史 token 的 K/V，避免重复计算，代价是显存随序列线性增长。FlashAttention：分块计算注意力避免实例化完整注意力矩阵，IO 优化+tiling，显存 O(n) 且更快。PagedAttention：把 KV cache 分页管理，类似虚拟内存，减少碎片、提高批处理吞吐。追问：MQA/GQA 共享 KV 头降显存。",
+   src:" · // 高频"},
+  {cat:"大模型",q:"LoRA 原理及参数量计算？全参数微调、LoRA、QLoRA 区别？",point:"高效微调",
+   ans:"LoRA：冻结原权重 W，只训练低秩分解 A·B（ΔW=BA，rank r），推理时合并回 W。参数量：2×d×r，远小于全量。全参微调效果上限高但显存/成本大；QLoRA 对冻结权重 4bit 量化进一步省显存。选择逻辑：数据量、GPU 内存、效果要求。",
+   src:" · 高频"},
+  {cat:"大模型",q:"大模型一张卡放不下，有哪些并行策略？DeepSpeed ZeRO 做了什么？",point:"分布式训练",
+   ans:"数据并行（DP/ZeRO-DP）：各卡一份模型、分数据。张量并行（TP）：层内切分矩阵。流水线并行（PP）：按层切分、微批次流水。混合专家（MoE）专家并行。ZeRO：把优化器状态/梯度/参数分片，三级 ZeRO-1/2/3，用通信换显存。可补充：自研 AI 芯片 自研集合通信库 通信、自研 AI 框架 自动并行。",
+   src:" · 高频 + 自研芯片岗相关"},
+  {cat:"大模型",q:"【自出】LLM 幻觉产生的原因？有哪些检测与缓解手段？",point:"LLM 可靠性（开放题）",
+   ans:"原因：训练目标是 token 概率而非事实、知识截止、解码采样随机、缺乏外部知识约束。缓解：RAG 外挂知识、提示词约束（“不知道就说不知道”）、解码参数调低温度、事实核对（搜索/工具验证）、对置信度低拒答。检测：自我一致性、外部检索校验、NLI 式核对。",
+   src:"【自出】· 大模型/应用岗常见开放题"},
+
+  // 四、CV 与 NLP
+  {cat:"CV与NLP",q:"图像数据增强的方法有哪些？（图像/音频）",point:"数据增强（原题）",
+   ans:"图像：翻转、旋转、裁剪、缩放、平移、加噪声、色彩抖动、亮度对比度调整、Mixup/Cutout。音频：时间拉伸、Pitch shifting、动态范围压缩、加背景噪声。目的：扩样本、抗过拟合、提升泛化。注意：增强要与任务语义一致（如 OCR 不宜翻转文字）。",
+   src:" · 算法面经（“数据增强的方法”）"},
+  {cat:"CV与NLP",q:"人脸识别的损失函数有哪些演进？（对比学习视角）",point:"度量学习（原题，面试官做人脸识别）",
+   ans:"Softmax 交叉熵→改进判别性：Center Loss（类内紧凑）→Triplet Loss（锚点-正-负样本）→ArcFace/CosFace（角度间隔 margin，类间分离）。思路核心：拉近同类、推远异类。可扩展到通用表示学习（对比学习 SimCLR 等）。",
+   src:" · 算法面经（“人脸识别的损失函数”）"},
+  {cat:"CV与NLP",q:"怎么区分照片和真人（活体检测）？",point:"CV 场景开放题（面试官追问）",
+   ans:"单张图片难判断，可多帧利用运动信息（眨眼、头部姿态、微表情）。深度图/3D 结构（RGB-D 相机，照片是平面）。光照反射与阴影一致性分析。面试时先跟面试官确认输入形式（可多张照片），再给方案——沟通本身是加分项。",
+   src:" · 算法面经（大白智能整理，面试官提示可拍多张）"},
+  {cat:"CV与NLP",q:"传统图像处理：Canny 算子的流程？",point:"图像处理基础（原题）",
+   ans:"高斯滤波去噪；计算梯度幅值与方向（Sobel）；非极大值抑制（细化边缘）；双阈值检测与滞后连接（高阈值定强边缘，低阈值补弱边缘并连接）。",
+   src:" · 算法面经（“Canny 算子”）"},
+  {cat:"CV与NLP",q:"两阶段（Faster R-CNN）和一阶段（YOLO）目标检测的区别？为什么两阶段精度高、一阶段快？",point:"目标检测主线",
+   ans:"两阶段：RPN 提候选框→二次精修分类回归，正负样本更均衡、定位更精细。一阶段：网格直接回归，快但正负样本极度不平衡拉低精度。Focal Loss 缓解一阶段样本不平衡（易分样本压低权重）。演进：anchor-based→anchor-free（CenterNet/DETR）。",
+   src:" · CV 岗高频"},
+  {cat:"CV与NLP",q:"手撕 NMS（非极大值抑制）和 IoU 计算",point:"手撕代码（CV 岗高频）",
+   ans:"IoU：交集面积/并集面积，注意无交集返回 0，坐标 [x1,y1,x2,y2]。NMS：按置信度排序→取最高框→删除与其 IoU>阈值的框→重复。边界条件（空列表、完全包含）。可扩展讲 Soft-NMS（衰减而非删除）。",
+   src:" · CV 岗高频"},
+  {cat:"CV与NLP",q:"Word2Vec 的 CBOW 和 Skip-gram 区别？负采样解决了什么？",point:"词向量",
+   ans:"CBOW 用上下文预测中心词，适合小语料、快；Skip-gram 用中心词预测上下文，适合大语料、对罕见词更好。原始 softmax 词表巨大计算量爆炸；负采样用少量负样本（按词频 3/4 次方采样）做二分类近似，大幅加速。层次 softmax 是另一加速方案。",
+   src:" · /NLP 岗高频"},
+  {cat:"CV与NLP",q:"BERT 怎么预训练的？MLM 的 15% mask 中 80/10/10 的原因？BERT 和 GPT 区别？",point:"预训练模型（NLP 必考）",
+   ans:"两个任务：MLM（掩码词预测）+NSP（下一句预测）。15% 中被选 token：80% 换 [MASK]（让模型学预测）、10% 随机替换（缓解训练/推理 mask 不一致）、10% 保持不变（拉向真实表征）——防止模型只依赖 [MASK] 标记。BERT 是 encoder-only 双向，适合理解类任务（分类/抽取）；GPT 是 decoder-only 单向自回归，适合生成。",
+   src:" · / NLP 岗高频"},
+  {cat:"CV与NLP",q:"BERT 的输入由哪三个 embedding 组成？为什么要做 Segment/Position embedding？",point:"BERT 输入表示",
+   ans:"Token embedding + Segment embedding（区分句 A/B）+ Position embedding（位置信息，Transformer 无位置概念）。三部分相加作为输入。可追问：与 RoPE 等相对位置编码的区别。",
+   src:" ·  NLP 岗"},
+  {cat:"CV与NLP",q:"什么是 CRF？为什么序列标注用 CRF 做解码比贪心解码好？",point:"NLP 经典模型",
+   ans:"CRF 建模标签序列的转移与发射特征，全局归一化。贪心解码只考虑单点最优，CRF 用维特比考虑标签间约束（如 B 后不能直接跟 I）。相比 LSTM 独立分类能保证合法标签序列。",
+   src:" · / NLP 岗"},
+  {cat:"CV与NLP",q:"【自出】OCR/检测模型在自研 NPU 上部署调优，你会从哪些方面入手？",point:"自研 AI 芯片部署场景（AI 软开/自研芯片岗特色题）",
+   ans:"算子层面：算子融合（图算融合）、转 INT8 量化（PTQ/QAT）、算子排布与 DMA 对齐。框架层面：自研 AI 框架 图模式、自研中间表示 导出、自动并行。推理层面：batch 合并、多路流水、动态 shape 处理。工程：自研 AI 计算工具链 工具链（profiling 定位算子瓶颈）、C++ 部署、内存复用。",
+   src:"【自出】· 依据自研芯片岗 JD 与 自研 AI 计算工具链 文档整理"},
+
+  // 五、数学基础
+  {cat:"数学基础",q:"圆周（圆环）上随机取 3 个点，组成锐角三角形的概率？",point:"几何概率（经典题）",
+   ans:"答案 1/4。三点组成锐角三角形当且仅当三点不在同一半圆内；三点落在同一半圆的概率为 3/4（固定一点，另两点落在其顺时针半圆内概率 1/4，三点同半圆概率 3/4），故锐角=1−3/4=1/4。推广：n 个点在同一半圆的概率 n/2^(n−1)。",
+   src:" · 算法岗实习面试题"},
+  {cat:"数学基础",q:"抛硬币直到连续出现两次正面为止，平均要抛多少次？（连续三次正面呢？）",point:"马尔可夫链期望",
+   ans:"设 E0/E1 为当前已连续 0/1 次正面时的剩余期望次数，列递归方程求解。连续两次正面期望=6 次。连续三次正面期望=14 次。方法：按当前已连续正面数分状态列方程。",
+   src:" · 高频概率题（汇总）"},
+  {cat:"数学基础",q:"一副 52 张扑克牌随机抽两张，颜色相等的概率？",point:"组合概率",
+   ans:"颜色只有红/黑两种，每色 26 张。P=2×C(26,2)/C(52,2)=25/51≈0.49。条件概率视角：第一张任意，第二张同色概率 25/51。",
+   src:" · 概率题汇总"},
+  {cat:"数学基础",q:"均匀分布如何生成正态分布？（Box-Muller）",point:"随机数生成",
+   ans:"Box-Muller：由两个独立 U(0,1) 变量 U1、U2，令 Z1=√(−2ln U1)·cos(2πU2)、Z2=√(−2ln U1)·sin(2πU2)，则 Z1、Z2 独立标准正态。另一思路：中心极限定理（多个均匀变量求和近似正态，精度低）。用途：采样、模拟。",
+   src:" · 概率题汇总"},
+  {cat:"数学基础",q:"极大似然估计（MLE）和最大后验估计（MAP）的区别？",point:"参数估计",
+   ans:"MLE 最大化 P(数据|θ)，只依赖数据；MAP 最大化 P(θ|数据)∝P(数据|θ)P(θ)，引入先验。先验均匀时 MAP=MLE。L2 正则等价于高斯先验的 MAP，L1 等价于拉普拉斯先验。数据少时先验重要（贝叶斯观点）。",
+   src:" · 高频"},
+  {cat:"数学基础",q:"信息熵是什么？如何理解它表示不确定性？",point:"信息论",
+   ans:"H(X)=−Σp(x)log p(x)。分布越均匀熵越大（不确定性大），确定分布熵为 0。与编码长度、交叉熵/KL 散度的关系。决策树分裂（信息增益）就是熵减过程。",
+   src:" · /高频"},
+  {cat:"数学基础",q:"【自出】矩阵特征值、特征向量的定义？在机器学习/PCA 中怎么用？",point:"线性代数",
+   ans:"Av=λv，λ 特征值、v 特征向量。对称矩阵可正交对角化。PCA：对协方差矩阵做特征分解，取最大特征值对应特征向量为投影方向（最大方差方向）。其他应用：谱聚类、图神经网络、PageRank。",
+   src:"【自出】· 常见数学基础考点"},
+  {cat:"数学基础",q:"【自出】什么是梯度下降？为什么沿负梯度方向更新？学习率过大/过小会怎样？",point:"最优化基础",
+   ans:"梯度是函数增长最快的方向，负梯度是下降最快方向（一阶泰勒展开）。更新：θ←θ−η∇L。学习率过大：震荡甚至发散；过小：收敛极慢。改进：动量、自适应学习率（Adam）、学习率调度。手撕场景可让写小批量梯度下降循环。",
+   src:"【自出】· 最优化高频基础题"},
+  {cat:"数学基础",q:"【自出】贝叶斯公式与朴素贝叶斯：条件独立的假设是什么？为什么“朴素”？",point:"概率与生成模型",
+   ans:"P(Y|X)∝P(Y)ΠP(x_i|Y)，假设特征在给定类别下条件独立。“朴素”指该强假设，现实中常不成立但效果尚可。适合高维稀疏文本分类（垃圾邮件）。平滑处理（拉普拉斯平滑）避免概率为 0。",
+   src:"【自出】· 常见考点"},
+
+  // 六、项目深挖
+  {cat:"项目深挖",q:"讲讲你的项目（自我介绍与项目主线）",point:"表达结构、真实性",
+   ans:"一句话背景（任务+你的角色+结果）；问题定义与难点；技术方案（为什么这么选，对比过哪些）；量化结果与反思。面试官会顺着每个点追问，自己没做过的细节不要吹。",
+   src:" ·  AI 工程师三面"},
+  {cat:"项目深挖",q:"项目中最困难的事情是什么？你怎么解决的？",point:"抗压、问题解决",
+   ans:"选真实有细节的案例。STAR 结构：情境→任务→行动→结果。突出定位问题的方法（数据分析/ablation）、权衡取舍、最终量化收益。主管面高频，答案要具体到数字。",
+   src:" · 主管面（面经）"},
+  {cat:"项目深挖",q:"如何评估你项目的效果？指标为什么提升了？",point:"评估方法与归因",
+   ans:"指标定义（离线/在线）、baseline 对比、A/B 实验。提升归因要说清：数据还是模型还是调参？做消融实验（ablation）支撑。警惕：指标提升是否有统计显著性、有无样本选择偏差/数据泄漏。补充失败经验同样加分。",
+   src:" · 技术面常见追问"},
+  {cat:"项目深挖",q:"为什么选这个模型不选那个？（技术选型题）",point:"选型判断力（开放题高频）",
+   ans:"从数据量、任务类型、延迟/成本约束、可解释性四维度答。对比过哪些候选（baseline 实验）。结合算力资源（场景：自研 NPU 算子支持、自研 AI 框架 生态）。结论：选型是“约束下的最优解”，不是“最先进”。",
+   src:" · /高频开放题"},
+  {cat:"项目深挖",q:"训练数据怎么处理的？遇到数据不均衡怎么办？",point:"数据工程",
+   ans:"流程：清洗→去重→标注质检→增强→划分。不均衡：重采样（过采样/欠采样）、损失加权、Focal Loss、阈值调整、异常检测视角。数据泄漏风险点（时间序列切分、重复样本）。大模型场景：数据配比、去污染。",
+   src:" · 高频"},
+  {cat:"项目深挖",q:"模型上线部署的流程？如何保证线上效果和离线一致？",point:"MLOps",
+   ans:"流程：离线评测→导出（ONNX/自研中间表示）→服务化（推理引擎）→灰度→全量。离线在线差异：特征一致性（训练/推理特征管线同源）、模型版本管理、数据分布漂移（PSI）。监控：延迟、吞吐、指标回捞、报警。场景可提自研推理硬件 推理卡与 自研应用开发套件。",
+   src:" · 高频 + 自研芯片岗相关"},
+  {cat:"项目深挖",q:"你简历上写用过 XX（GBDT/Transformer/LoRA 等），讲一下它在你项目里怎么用的、有哪些坑？",point:"简历真实性、深度",
+   ans:"主动把“用过”讲成“调过参+改过结构+排过坑”。具体坑例：GBDT 特征泄漏、Transformer 训练不稳定（lr/预热）、LoRA 秩的选择。被追问细节不会时，诚实说并给出验证思路，比硬编强。",
+   src:"（变形）· 面试官“聊简历项目会继续深入问”"},
+  {cat:"项目深挖",q:"【自出】如果给你 2 周做一个 XX 方向的算法方案，你怎么安排？",point:"规划与落地（开放题）",
+   ans:"前 1-2 天：明确指标与数据可得性。第 1 周：快速跑通 baseline（简单模型全流程）。第 2 周：按收益排序优化（数据/特征/模型/工程），每天记录实验。收尾：效果总结、风险清单、可上线性评估。突出“先有闭环再优化”的工程思维。",
+   src:"【自出】· /通用规划类开放题"},
+
+  // 七、行为与 HR 面
+  {cat:"行为HR",q:"为什么选择？（有什么吸引你的地方？）",point:"动机与价值观匹配",
+   ans:"技术层面：/自研 AI 芯片/大模型投入、平台与成长空间。价值观认同：以客户为中心、、长期——但要真诚、结合具体理由。避免空话套话，讲“为什么是而不是其他公司”的具体差异。稳定表达长期留任意愿。",
+   src:" ·  HR/主管面高频"},
+  {cat:"行为HR",q:"如何看待的工作强度和加班文化？",point:"工作强度接受度（主管面几乎必问）",
+   ans:"表示理解并接受（“”），强调自己目标导向、能扛项目节奏。避免两个极端：表演式热情（“以公司为家”显得假）和明显不匹配（“我很看重 work-life balance”是风险信号）。用过往经历佐证（项目冲刺、竞赛、实习加班）。回答要真实且前后一致，面试官会交叉验证。",
+   src:" · 主管面高频"},
+  {cat:"行为HR",q:"未来希望在哪个城市发展？是否接受外派或调岗？",point:"地域灵活性（主管面高频）",
+   ans:"明确给出可接受的城市范围（常见 base：深圳/东莞/上海/北京/成都/西安/杭州/南京等）。表达接受外派/调岗的开放性，但说出偏好排序。会记录意向地，前后不一致会被视为不稳定。结合家庭/发展给出真诚理由。",
+   src:" · 主管面（面经“意向工作地”）"},
+  {cat:"行为HR",q:"在团队中遇到意见分歧，你怎么处理？",point:"协作与冲突处理",
+   ans:"STAR 案例：先对齐目标，用数据/实验说话，必要时向上反馈。强调对事不对人、倾听对方逻辑。结果导向：最终以团队目标为准，服从组织决定。风格：尊重流程与领导决策。",
+   src:" · 主管面（“团队意见不一致怎么处理”）"},
+  {cat:"行为HR",q:"你遇到过最大的困难/压力最大的经历是什么？",point:"抗压与成长性思维",
+   ans:"选真实事件，避免“考试没考好”类低质量答案。STAR 展开，突出分析问题方法与主动解决。结尾讲收获与复盘。另有一类题：“学习中遇到困难的情况，怎么做的”“举例说明学习能力强”。",
+   src:" · 三面/主管面"},
+  {cat:"行为HR",q:"你如何理解“”的价值观？你觉得你在团队中是什么样的人？",point:"价值观认同、自我认知",
+   ans:"解释：让价值创造者得到合理回报、激励持续奋斗。结合自身：举例自己为目标投入、结果导向的例子。表明与个人职业观契合。避免空背口号，要有个人解读。",
+   src:" · 价值观题高频"},
+  {cat:"行为HR",q:"用 STAR 方法描述一次你在团队中解决冲突的经历 / 一次压力下做关键决策的经历",point:"结构化行为面试",
+   ans:"S：情境背景（规模、时间、矛盾点）；T：你的任务与责任；A：具体行动（你的判断与取舍）；R：量化结果与反馈。面经强调 STAR 四要素缺一不可、清晰可辨。",
+   src:" · 面经（行为面）"},
+  {cat:"行为HR",q:"你还有什么问题要问我吗？（反问环节）",point:"主动性、对公司的了解",
+   ans:"问业务/团队：部门当前核心方向、大模型/自研 AI 芯片投入、新人对齐目标。问成长：胜任该岗位最看重的品质、晋升路径。避免：不问、只问薪资福利、问可答的问题。反问是加分项不是负担。",
+   src:" · 各轮面试必问"},
+  {cat:"行为HR",q:"【自出】如果入职后安排你做的工作与预期（比如研究方向）不符，你会怎么办？",point:"稳定性与服从度（开放题）",
+   ans:"先表达服从组织安排、从基础做起。说明会主动学习新方向、把现有技能迁移过去。强调结果导向而非岗位名称导向。避免表达“不接受调岗”或过度理想化。",
+   src:"【自出】· 稳定性考察常见变体题"},
+];
+
+/* ================= Q&A 应用逻辑 ================= */
+const CATS = ["全部","机器学习","深度学习","大模型","CV与NLP","数学基础","项目深挖","行为HR"];
+let curCat = "全部", curMem = "all";
+const memStore = (() => {
+  try { const s = localStorage.getItem("aiQA_mem"); return s ? JSON.parse(s) : {}; } catch(e){ return {}; }
+})();
+function saveMem(){ try{ localStorage.setItem("aiQA_mem", JSON.stringify(memStore)); }catch(e){} }
+function memOf(i){ return memStore[i] || "none"; }
+
+function buildCatBar(){
+  const bar = document.getElementById("catBar"); bar.innerHTML="";
+  CATS.forEach(c=>{
+    const d=document.createElement("div"); d.className="chip"+(c===curCat?" active":""); d.textContent=c;
+    d.onclick=()=>{ curCat=c; document.querySelectorAll("#catBar .chip").forEach(x=>x.classList.remove("active")); d.classList.add("active"); renderQA(); };
+    bar.appendChild(d);
+  });
+}
+document.querySelectorAll("#memBar .chip").forEach(ch=>{
+  ch.onclick=()=>{ curMem=ch.dataset.mem; document.querySelectorAll("#memBar .chip").forEach(x=>x.classList.remove("active")); ch.classList.add("active"); renderQA(); };
+});
+
+function renderQA(){
+  const list=document.getElementById("qaList"); list.innerHTML="";
+  const items = QA.map((q,i)=>({q,i})).filter(({q,i})=>{
+    if(curCat!=="全部" && q.cat!==curCat) return false;
+    if(curMem!=="all" && memOf(i)!==curMem) return false;
+    return true;
+  });
+  // stats
+  let yesN=0,noN=0,noneN=0; QA.forEach((_,i)=>{ const m=memOf(i); if(m==="yes")yesN++; else if(m==="no")noN++; else noneN++; });
+  document.getElementById("qaStats").textContent = "共 "+QA.length+" 题 · 已记住 "+yesN+" · 未记住 "+noN+" · 未标记 "+noneN+"　|　当前显示 "+items.length+" 题";
+  if(items.length===0){ list.innerHTML='<div class="empty">该筛选下暂无题目</div>'; return; }
+  items.forEach(({q,i})=>{
+    const m=memOf(i);
+    const card=document.createElement("div"); card.className="qcard";
+    card.innerHTML =
+      '<div class="qhead">'
+      + '<span class="chev">▶</span>'
+      + '<div><span class="qcat">'+q.cat+'</span><span class="qtitle">'+q.q+'</span></div>'
+      + '</div>'
+      + '<div class="qbody">'
+      + '<div class="row"><span class="lbl">考察点：</span>'+q.point+'</div>'
+      + '<div class="row"><span class="lbl">参考思路：</span>'+q.ans+'</div>'
+      + '<div class="row"><span class="lbl">来源：</span><span class="src">'+q.src+'</span></div>'
+      + '<div class="marks">'
+      + '<div class="mk yes'+(m==="yes"?" on":"")+'" data-i="'+i+'" data-m="yes">✅ 已记住</div>'
+      + '<div class="mk no'+(m==="no"?" on":"")+'" data-i="'+i+'" data-m="no">🧡 未记住</div>'
+      + '</div>'
+      + '</div>';
+    card.querySelector(".qhead").onclick=()=>{ card.classList.toggle("open"); };
+    card.querySelectorAll(".mk").forEach(b=>{
+      b.onclick=(e)=>{ e.stopPropagation(); setMark(+b.dataset.i, b.dataset.m); };
+    });
+    list.appendChild(card);
+  });
+}
+function setMark(i,m){
+  const cur=memOf(i);
+  if(cur===m){ delete memStore[i]; }   // 再点一次取消
+  else { memStore[i]=m; }
+  saveMem(); renderQA();
+}
+
+/* ================= 模式切换 ================= */
+function showPanel(name){
+  const quiz=document.getElementById("quiz"), qa=document.getElementById("qa");
+  const tq=document.getElementById("tabQuiz"), tqa=document.getElementById("tabQA");
+  if(name==="qa"){ quiz.style.display="none"; qa.style.display="block"; tq.classList.remove("active"); tqa.classList.add("active"); renderQA(); }
+  else { qa.style.display="none"; quiz.style.display="block"; tqa.classList.add("active"); tq.classList.remove("active"); }
+}
+document.getElementById("tabQuiz").onclick=()=>showPanel("quiz");
+document.getElementById("tabQA").onclick=()=>showPanel("qa");
+document.getElementById("homeBtn").onclick=(e)=>{ e.preventDefault(); location.href="index.html"; };
+/* 顶部导航深链：#qa 直接进问答，#quiz 进选择题 */
+(function(){ const h=(location.hash||"").replace("#","").toLowerCase(); if(h==="qa"||h==="q") showPanel("qa"); else showPanel("quiz"); })();
+
+/* ================= 启动 ================= */
+buildCatBar();
+renderQuiz();
+</script>
+</body>
+</html>
