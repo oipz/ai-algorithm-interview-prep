@@ -639,7 +639,7 @@ const QA = [
    ans:"Transformer 无位置信息，需注入位置编码。绝对位置编码（sinusoidal/可学习）。RoPE：用旋转矩阵把相对位置信息编码进 Q/K 的点积，外推性更好，LLaMA 系在用。ALiBi：给注意力分数加与距离线性相关的偏置，无需训练即可外推长文本。",
    src:" · 高频"},
   {cat:"大模型",q:"BPE（Byte Pair Encoding）分词原理？中文分词注意什么？",point:"Tokenization",
-   ans:"初始为字符/，反复合并频次最高的相邻 pair 直到词表大小达标。优点：平衡词表大小与 OOV。中文：字/子词切分粒度、预分词策略、词表覆盖常用字与词。可追问：为什么 GPT 用 BPE，SentencePiece 与 BPE 区别（无监督、Unigram 语言模型）。",
+   ans:"初始为字符或更小单元，反复合并频次最高的相邻 pair 直到词表大小达标。优点：平衡词表大小与 OOV。中文：字/子词切分粒度、预分词策略、词表覆盖常用字与词。可追问：为什么 GPT 用 BPE，SentencePiece 与 BPE 区别（无监督、Unigram 语言模型）。",
    src:" · LLM 岗高频"},
   {cat:"大模型",q:"Pre-train、SFT、RLHF 的区别？为什么 SFT 之后还要 RL？",point:"训练流程与对齐",
    ans:"预训练：海量文本学语言能力（next token prediction）；SFT：指令数据学“按指令回答”；RLHF：偏好数据对齐人类价值观、提升有用性/无害性。只做 SFT 的局限：难以表达复杂偏好（“更好”是相对概念）、只能模仿标注分布、无法优化多轮/开放式目标。RLHF 直接以偏好反馈为目标优化。",
