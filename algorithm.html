@@ -142,6 +142,13 @@
   .drawer-search{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
   .drawer-search input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#eaeaea;border-radius:9px;padding:8px 11px;font-size:13.5px;outline:none}
   .drawer-search input:focus{border-color:#4fc3f7}
+  .drawer-filter{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .fchip{
+    flex:0 0 auto;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#c5d2e3;
+    padding:5px 10px;border-radius:13px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .15s;
+  }
+  .fchip.active{background:rgba(79,195,247,.16);border-color:#4fc3f7;color:#fff}
+  .fchip:active{background:rgba(255,255,255,.16)}
   .drawer-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 0 16px}
   .dcat-h{font-size:11.5px;color:#4fc3f7;font-weight:700;padding:10px 14px 4px}
   .ditem{
@@ -199,6 +206,14 @@
     <button class="close" id="drawerClose">✕</button>
   </div>
   <div class="drawer-search"><input id="drawerSearch" type="text" placeholder="搜索题目…"></div>
+  <div class="drawer-filter" id="drawerFilter">
+    <button class="fchip active" data-f="all">全部</button>
+    <button class="fchip" data-f="unseen">未看过</button>
+    <button class="fchip" data-f="seen">看过</button>
+    <button class="fchip" data-f="undone">未完成</button>
+    <button class="fchip" data-f="done">已完成</button>
+    <button class="fchip" data-f="fav">收藏</button>
+  </div>
   <div class="drawer-body" id="drawerBody"></div>
   <div class="drawer-foot">点击跳转 · 圆点表示状态：看过 / 完成 / 收藏</div>
 </aside>
@@ -214,6 +229,7 @@
   var K_FAV  = PREFIX+"algo_fav";
   var K_MODE = PREFIX+"algo_mode";
   var K_TOPIC= PREFIX+"algo_topic";
+  var K_FILTER=PREFIX+"algo_filter";
 
   // index 1-based numbering by original order
   PROBLEMS.forEach(function(p,i){ p._n = i+1; });
@@ -230,7 +246,7 @@
 
   var mode = localStorage.getItem(K_MODE) || "seq";
   var topic = localStorage.getItem(K_TOPIC) || order[0];
-  var filter = "all";
+  var filter = localStorage.getItem(K_FILTER) || "all";
   var curIdx = 0; // index into PROBLEMS
 
   // ---- url deep-link (?id= / ?n= / ?topic=) ----
@@ -290,19 +306,20 @@
   }
 
   // ===== current problem set by mode/filter =====
+  function matchFilter(p){
+    var id=p.id;
+    if(filter==="unseen") return !seen.has(id);
+    if(filter==="seen") return seen.has(id);
+    if(filter==="done") return done.has(id);
+    if(filter==="undone") return !done.has(id);
+    if(filter==="fav") return fav.has(id);
+    return true;
+  }
   function activeList(){
     var base;
     if(mode==="topic") base = groups[topic] || PROBLEMS;
     else base = PROBLEMS;
-    return base.filter(function(p){
-      var id=p.id;
-      if(filter==="unseen") return !seen.has(id);
-      if(filter==="seen") return seen.has(id);
-      if(filter==="done") return done.has(id);
-      if(filter==="undone") return !done.has(id);
-      if(filter==="fav") return fav.has(id);
-      return true;
-    });
+    return base.filter(matchFilter);
   }
 
   function markSeen(p){ seen.add(p.id); saveSet(K_SEEN, seen); }
@@ -321,7 +338,7 @@
     var wrap=document.getElementById("qcardWrap");
     var list=activeList();
     if(list.length===0){
-      wrap.innerHTML='<div class="qcard"><div class="empty">没有可显示的题目。</div></div>';
+      wrap.innerHTML='<div class="qcard"><div class="empty">当前筛选下没有题目，可在侧边栏切换筛选。</div></div>';
       renderProgress();
       return;
     }
@@ -403,6 +420,7 @@
     var any=false;
     order.forEach(function(cat){
       var items=groups[cat].filter(function(p){
+        if(!matchFilter(p)) return false;
         if(!q) return true;
         return (p.title+" "+p.source+" "+(p.tags||[]).join(" ")+" "+p.category).toLowerCase().indexOf(q)>=0;
       });
@@ -418,7 +436,7 @@
         body.appendChild(row);
       });
     });
-    if(!any){ body.innerHTML='<div class="empty">没有匹配的题目</div>'; }
+    if(!any){ body.innerHTML='<div class="empty">没有匹配的题目，试试切换筛选或搜索</div>'; }
   }
   function renderDrawerActive(){
     var rows=document.getElementById("drawerBody").querySelectorAll(".ditem");
@@ -427,7 +445,12 @@
     // lightweight: full re-render only if structure changed; here just toggle cur by data-id not stored -> re-render
     renderDrawer(document.getElementById("drawerSearch").value);
   }
-  function openDrawer(){ document.getElementById("drawer").classList.add("open"); document.getElementById("drawerBack").classList.add("open"); renderDrawer(document.getElementById("drawerSearch").value); }
+  function renderDrawerFilter(){
+    document.querySelectorAll("#drawerFilter .fchip").forEach(function(c){
+      c.classList.toggle("active", c.dataset.f===filter);
+    });
+  }
+  function openDrawer(){ document.getElementById("drawer").classList.add("open"); document.getElementById("drawerBack").classList.add("open"); renderDrawerFilter(); renderDrawer(document.getElementById("drawerSearch").value); }
   function closeDrawer(){ document.getElementById("drawer").classList.remove("open"); document.getElementById("drawerBack").classList.remove("open"); }
 
   // ===== events =====
@@ -461,6 +484,12 @@
   document.getElementById("drawerClose").addEventListener("click",closeDrawer);
   document.getElementById("drawerBack").addEventListener("click",closeDrawer);
   document.getElementById("drawerSearch").addEventListener("input",function(){ renderDrawer(this.value); });
+  document.getElementById("drawerFilter").addEventListener("click",function(e){
+    var t=e.target.closest(".fchip"); if(!t) return;
+    filter=t.dataset.f; localStorage.setItem(K_FILTER,filter);
+    renderDrawerFilter(); renderDrawer(document.getElementById("drawerSearch").value);
+    renderQuestion();
+  });
 
   // keyboard nav
   document.addEventListener("keydown",function(e){
