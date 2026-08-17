@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="算法刷题区：单题视图、编号跳转、随机/顺序/专题刷题、三级递进提示、代码语法高亮、可伸缩侧边栏与本地状态。">
+<meta name="description" content="算法刷题区：单题视图、顺序/随机刷题、三级递进提示、代码语法高亮、可伸缩侧边栏与本地状态。">
 <title>算法刷题区 · AI 算法岗面试题库</title>
 <style>
   /* ===== 与 AI 知识区统一：深色渐变 + 玻璃卡片 + 青色点缀 =====
@@ -51,27 +51,6 @@
   .dot.fav i{background:#ffb74d}
   .dot.unseen i{background:#5a6b82}
 
-  /* controls */
-  .controls{margin-bottom:12px}
-  .ctrl-row{display:flex;gap:6px;flex-wrap:wrap}
-  .chip{
-    flex:0 0 auto;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#c5d2e3;
-    padding:6px 11px;border-radius:14px;font-size:12.5px;cursor:pointer;white-space:nowrap;transition:all .15s;
-  }
-  .chip.active{background:rgba(79,195,247,.16);border-color:#4fc3f7;color:#fff}
-  .chip:active{background:rgba(255,255,255,.16)}
-  .ctrl-row.mode .chip{flex:1;text-align:center}
-  .jumpbox{display:flex;gap:6px;margin-top:8px;align-items:center}
-  .jumpbox input{
-    flex:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#eaeaea;
-    border-radius:10px;padding:8px 12px;font-size:14px;outline:none;
-  }
-  .jumpbox input:focus{border-color:#4fc3f7;box-shadow:0 0 0 3px rgba(79,195,247,.18)}
-  .jumpbox button{
-    flex:0 0 auto;background:#4fc3f7;color:#0b1e33;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;
-  }
-  .jumpbox button:active{filter:brightness(1.1)}
-
   /* single question card */
   .qcard{
     background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
@@ -79,7 +58,6 @@
   }
   .qhead{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
   .qnum{font-size:13px;color:#4fc3f7;background:rgba(79,195,247,.12);padding:3px 10px;border-radius:12px;font-weight:700}
-  .qcat{font-size:11px;color:#8fa3bd}
   .qtitle{font-size:17px;font-weight:700;line-height:1.5;margin-top:8px;flex-basis:100%}
   .qdiff{font-size:11px;padding:2px 8px;border-radius:6px;font-weight:600}
   .qdiff.简单{background:rgba(76,175,80,.18);color:#a5d6a7}
@@ -164,6 +142,13 @@
   .drawer-search{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
   .drawer-search input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#eaeaea;border-radius:9px;padding:8px 11px;font-size:13.5px;outline:none}
   .drawer-search input:focus{border-color:#4fc3f7}
+  .drawer-filter{display:flex;gap:6px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.08)}
+  .fchip{
+    flex:0 0 auto;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#c5d2e3;
+    padding:5px 10px;border-radius:13px;font-size:12px;cursor:pointer;white-space:nowrap;transition:all .15s;
+  }
+  .fchip.active{background:rgba(79,195,247,.16);border-color:#4fc3f7;color:#fff}
+  .fchip:active{background:rgba(255,255,255,.16)}
   .drawer-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:6px 0 16px}
   .dcat-h{font-size:11.5px;color:#4fc3f7;font-weight:700;padding:10px 14px 4px}
   .ditem{
@@ -207,28 +192,6 @@
     </div>
   </div>
 
-  <!-- 控制：模式 + 筛选 + 跳转 -->
-  <div class="controls">
-    <div class="ctrl-row mode" id="modeRow">
-      <button class="chip active" data-mode="seq">顺序刷</button>
-      <button class="chip" data-mode="rand">随机刷</button>
-      <button class="chip" data-mode="topic">按专题</button>
-    </div>
-    <div class="ctrl-row" id="topicRow" style="display:none;margin-top:8px"></div>
-    <div class="ctrl-row" id="filterRow" style="margin-top:8px">
-      <button class="chip active" data-f="all">全部</button>
-      <button class="chip" data-f="unseen">未看过</button>
-      <button class="chip" data-f="seen">看过</button>
-      <button class="chip" data-f="undone">未完成</button>
-      <button class="chip" data-f="done">已完成</button>
-      <button class="chip" data-f="fav">收藏</button>
-    </div>
-    <div class="jumpbox">
-      <input id="jumpInput" type="number" min="1" placeholder="按编号跳转（1–102）" inputmode="numeric">
-      <button id="jumpBtn">跳转</button>
-    </div>
-  </div>
-
   <!-- 单题卡 -->
   <div id="qcardWrap"></div>
 
@@ -243,6 +206,14 @@
     <button class="close" id="drawerClose">✕</button>
   </div>
   <div class="drawer-search"><input id="drawerSearch" type="text" placeholder="搜索题目…"></div>
+  <div class="drawer-filter" id="drawerFilter">
+    <button class="fchip active" data-f="all">全部</button>
+    <button class="fchip" data-f="unseen">未看过</button>
+    <button class="fchip" data-f="seen">看过</button>
+    <button class="fchip" data-f="undone">未完成</button>
+    <button class="fchip" data-f="done">已完成</button>
+    <button class="fchip" data-f="fav">收藏</button>
+  </div>
   <div class="drawer-body" id="drawerBody"></div>
   <div class="drawer-foot">点击跳转 · 圆点表示状态：看过 / 完成 / 收藏</div>
 </aside>
@@ -258,6 +229,7 @@
   var K_FAV  = PREFIX+"algo_fav";
   var K_MODE = PREFIX+"algo_mode";
   var K_TOPIC= PREFIX+"algo_topic";
+  var K_FILTER=PREFIX+"algo_filter";
 
   // index 1-based numbering by original order
   PROBLEMS.forEach(function(p,i){ p._n = i+1; });
@@ -274,7 +246,7 @@
 
   var mode = localStorage.getItem(K_MODE) || "seq";
   var topic = localStorage.getItem(K_TOPIC) || order[0];
-  var filter = "all";
+  var filter = localStorage.getItem(K_FILTER) || "all";
   var curIdx = 0; // index into PROBLEMS
 
   // ---- url deep-link (?id= / ?n= / ?topic=) ----
@@ -334,19 +306,20 @@
   }
 
   // ===== current problem set by mode/filter =====
+  function matchFilter(p){
+    var id=p.id;
+    if(filter==="unseen") return !seen.has(id);
+    if(filter==="seen") return seen.has(id);
+    if(filter==="done") return done.has(id);
+    if(filter==="undone") return !done.has(id);
+    if(filter==="fav") return fav.has(id);
+    return true;
+  }
   function activeList(){
     var base;
     if(mode==="topic") base = groups[topic] || PROBLEMS;
     else base = PROBLEMS;
-    return base.filter(function(p){
-      var id=p.id;
-      if(filter==="unseen") return !seen.has(id);
-      if(filter==="seen") return seen.has(id);
-      if(filter==="done") return done.has(id);
-      if(filter==="undone") return !done.has(id);
-      if(filter==="fav") return fav.has(id);
-      return true;
-    });
+    return base.filter(matchFilter);
   }
 
   function markSeen(p){ seen.add(p.id); saveSet(K_SEEN, seen); }
@@ -365,7 +338,7 @@
     var wrap=document.getElementById("qcardWrap");
     var list=activeList();
     if(list.length===0){
-      wrap.innerHTML='<div class="qcard"><div class="empty">当前筛选下没有题目。换个筛选或专题试试。</div></div>';
+      wrap.innerHTML='<div class="qcard"><div class="empty">当前筛选下没有题目，可在侧边栏切换筛选。</div></div>';
       renderProgress();
       return;
     }
@@ -386,7 +359,6 @@
       '<div class="qcard">'+
         '<div class="qhead">'+
           '<span class="qnum">第 '+p._n+' 题</span>'+
-          '<span class="qcat">'+esc(p.category)+'</span>'+
           '<span class="qdiff '+esc(diffCls)+'">'+esc(p.difficulty)+'</span>'+
           '<div class="qtitle">'+esc(p.title)+'</div>'+
         '</div>'+
@@ -409,7 +381,7 @@
           '<button class="navbtn seq" id="seqNext">顺序下一题</button>'+
           '<button class="navbtn rand" id="randNext">🎲 随机</button>'+
         '</div>'+
-        '<div class="qfooter">编号范围 1–'+N+' · 当前在「'+esc(mode==="topic"?topic:(mode==="rand"?"随机":"顺序"))+'」模式</div>'+
+        '<div class="qfooter">编号范围 1–'+N+' · 左右键翻页 · R 键随机</div>'+
       '</div>';
 
     // disable prev/seq at bounds for sequential ordering over active list
@@ -448,6 +420,7 @@
     var any=false;
     order.forEach(function(cat){
       var items=groups[cat].filter(function(p){
+        if(!matchFilter(p)) return false;
         if(!q) return true;
         return (p.title+" "+p.source+" "+(p.tags||[]).join(" ")+" "+p.category).toLowerCase().indexOf(q)>=0;
       });
@@ -463,7 +436,7 @@
         body.appendChild(row);
       });
     });
-    if(!any){ body.innerHTML='<div class="empty">没有匹配的题目</div>'; }
+    if(!any){ body.innerHTML='<div class="empty">没有匹配的题目，试试切换筛选或搜索</div>'; }
   }
   function renderDrawerActive(){
     var rows=document.getElementById("drawerBody").querySelectorAll(".ditem");
@@ -472,22 +445,13 @@
     // lightweight: full re-render only if structure changed; here just toggle cur by data-id not stored -> re-render
     renderDrawer(document.getElementById("drawerSearch").value);
   }
-  function openDrawer(){ document.getElementById("drawer").classList.add("open"); document.getElementById("drawerBack").classList.add("open"); renderDrawer(document.getElementById("drawerSearch").value); }
-  function closeDrawer(){ document.getElementById("drawer").classList.remove("open"); document.getElementById("drawerBack").classList.remove("open"); }
-
-  // ===== topic row =====
-  function renderTopicRow(){
-    var tr=document.getElementById("topicRow"); tr.innerHTML="";
-    order.forEach(function(cat){
-      var b=document.createElement("button"); b.className="chip"+(cat===topic?" active":""); b.textContent=cat;
-      b.addEventListener("click",function(){ topic=cat; localStorage.setItem(K_TOPIC,topic); renderTopicRow(); renderQuestion(); });
-      tr.appendChild(b);
+  function renderDrawerFilter(){
+    document.querySelectorAll("#drawerFilter .fchip").forEach(function(c){
+      c.classList.toggle("active", c.dataset.f===filter);
     });
   }
-  function renderMode(){
-    document.querySelectorAll("#modeRow .chip").forEach(function(c){ c.classList.toggle("active", c.dataset.mode===mode); });
-    document.getElementById("topicRow").style.display = mode==="topic"?"flex":"none";
-  }
+  function openDrawer(){ document.getElementById("drawer").classList.add("open"); document.getElementById("drawerBack").classList.add("open"); renderDrawerFilter(); renderDrawer(document.getElementById("drawerSearch").value); }
+  function closeDrawer(){ document.getElementById("drawer").classList.remove("open"); document.getElementById("drawerBack").classList.remove("open"); }
 
   // ===== events =====
   document.getElementById("qcardWrap").addEventListener("click",function(e){
@@ -516,25 +480,16 @@
     if(t.id==="randNext"){ gotoRandom(); return; }
   });
 
-  document.getElementById("modeRow").addEventListener("click",function(e){
-    var t=e.target.closest(".chip"); if(!t) return;
-    mode=t.dataset.mode; localStorage.setItem(K_MODE,mode); renderMode(); renderQuestion();
-  });
-  document.getElementById("filterRow").addEventListener("click",function(e){
-    var t=e.target.closest(".chip"); if(!t) return;
-    filter=t.dataset.f;
-    this.querySelectorAll(".chip").forEach(function(c){ c.classList.toggle("active",c===t); });
-    renderQuestion();
-  });
-  document.getElementById("jumpBtn").addEventListener("click",function(){
-    var v=parseInt(document.getElementById("jumpInput").value,10); if(v) gotoNum(v);
-  });
-  document.getElementById("jumpInput").addEventListener("keydown",function(e){ if(e.key==="Enter"){ var v=parseInt(this.value,10); if(v) gotoNum(v); } });
-
   document.getElementById("drawerBtn").addEventListener("click",openDrawer);
   document.getElementById("drawerClose").addEventListener("click",closeDrawer);
   document.getElementById("drawerBack").addEventListener("click",closeDrawer);
   document.getElementById("drawerSearch").addEventListener("input",function(){ renderDrawer(this.value); });
+  document.getElementById("drawerFilter").addEventListener("click",function(e){
+    var t=e.target.closest(".fchip"); if(!t) return;
+    filter=t.dataset.f; localStorage.setItem(K_FILTER,filter);
+    renderDrawerFilter(); renderDrawer(document.getElementById("drawerSearch").value);
+    renderQuestion();
+  });
 
   // keyboard nav
   document.addEventListener("keydown",function(e){
@@ -544,7 +499,7 @@
     else if(e.key==="r"||e.key==="R") gotoRandom();
   });
 
-  renderTopicRow(); renderMode(); renderQuestion();
+  renderQuestion();
 })();
 </script>
 </body>
